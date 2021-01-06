@@ -158,7 +158,7 @@ class TrainBooking(KnowledgeEngine):
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=False),
-          Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime),
+          Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime))
     def singleTicket(self):
         if self.knowledge['question'] == 'singleTicket':
             print()
