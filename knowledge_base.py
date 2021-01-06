@@ -47,6 +47,7 @@ class TrainBooking(KnowledgeEngine):
                 # Message.emit_feedback('display received message', 'unknown_message')
             else:
                 self.knowledge['question'] = 'askName'
+                print()
                 # Message.emit_feedback('display received message', 'ask_name')
 
     @Rule(Fact(action='greet'), Fact(name = MATCH.name))
