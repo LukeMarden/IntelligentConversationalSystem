@@ -1,30 +1,27 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
+from selenium import webdriver
+import pandas as pd
 
-url_to_scrape = "https://ojp.nationalrail.co.uk/service/planjourney/search"
+url = 'https://www.youtube.com/c/MrBeast6000/videos?view=0&sort=p&flow=grid'
 
+driver = webdriver.Chrome()
+driver.get(url)
 
-request_page = urlopen(url_to_scrape)
-page_html = request_page.read()
-request_page.close()
+videos = driver.find_elements_by_class_name('style-scope ytd-grid-video-renderer')
 
-html_soup = BeautifulSoup(page_html, 'html.parser')
+video_list = []
 
-cactus_items = html_soup.find_all('div', class_="jp-left")
+for video in videos:
+    title = video.find_element_by_xpath('.//*[@id="video-title"]').text
+    views = video.find_element_by_xpath('.//*[@id="metadata-line"]/span[1]').text
+    when = video.find_element_by_xpath('.//*[@id="metadata-line"]/span[2]').text
+    #print(title, views, when)
+    vid_item = {
+        'title': title,
+        'views': views,
+        'posted': when
+    }
 
-filename = 'products.csv'
-f = open(filename, 'w')
+    video_list.append(vid_item)
 
-headers = 'Title, Price \n'
-
-f.write(headers)
-
-for cactus in cactus_items:
-    A = cactus.find('div', class_="field half").text
-    B = cactus.find('div', class_="field clear").text
-    C = cactus.find('div', class_="no-float").text
-
-    f.write(A + ',' + B + ',' + C)
-
-f.close()
-
+df = pd.DataFrame(video_list)
+print(df)
