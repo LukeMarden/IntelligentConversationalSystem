@@ -1,5 +1,6 @@
 from experta import *
 from random import choice
+from DiscordUI import message
 # from experta.watchers import RULES, AGENDA
 
 class Ticket(Fact):
@@ -43,11 +44,11 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['name'] = self.ticket.name
         else:
             if self.knowledge['question'] == 'askName':
-                print("AskName")
+                return 'ask name'
                 # Message.emit_feedback('display received message', 'unknown_message')
             else:
                 self.knowledge['question'] = 'askName'
-                print()
+                return 'ask name'
                 # Message.emit_feedback('display received message', 'ask_name')
 
     @Rule(Fact(action='greet'), Fact(name = MATCH.name))
@@ -177,6 +178,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['question'] = 'returnTicket'
             print()
 
+def process_entities(entities):
+    engine.dictionary = entities
+    engine.reset()
+    engine.run()
 
 
 
@@ -186,3 +191,4 @@ if __name__ == '__main__':
     engine.knowledge = {}
     engine.reset()  # Prepare the engine for the execution.
     engine.run() # Run it!
+
