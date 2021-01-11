@@ -6,7 +6,7 @@ url = 'https://ojp.nationalrail.co.uk/service/timesandfares/IPS/NRW/today/1545/d
 driver = webdriver.Chrome()
 driver.get(url)
 
-videos = driver.find_elements_by_class_name('alt mtx')
+videos = driver.find_elements_by_class_name("mtx")
 
 video_list = []
 
@@ -25,3 +25,4 @@ for video in videos:
 
 df = pd.DataFrame(video_list)
 print(df)
+driver.quit()
