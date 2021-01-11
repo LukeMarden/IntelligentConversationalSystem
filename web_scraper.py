@@ -1,19 +1,19 @@
 from selenium import webdriver
 import pandas as pd
 
-url = 'https://www.youtube.com/c/MrBeast6000/videos?view=0&sort=p&flow=grid'
+url = 'https://ojp.nationalrail.co.uk/service/timesandfares/IPS/NRW/today/1545/dep'
 
 driver = webdriver.Chrome()
 driver.get(url)
 
-videos = driver.find_elements_by_class_name('style-scope ytd-grid-video-renderer')
+videos = driver.find_elements_by_class_name('alt mtx')
 
 video_list = []
 
 for video in videos:
-    title = video.find_element_by_xpath('.//*[@id="video-title"]').text
-    views = video.find_element_by_xpath('.//*[@id="metadata-line"]/span[1]').text
-    when = video.find_element_by_xpath('.//*[@id="metadata-line"]/span[2]').text
+    title = video.find_element_by_xpath('.//*[@id="results-from"]').text
+    views = video.find_element_by_xpath('.//*[@id="results-details"]/span[1]').text
+    when = video.find_element_by_xpath('.//*[@id="fare "]/span[2]').text
     #print(title, views, when)
     vid_item = {
         'title': title,
