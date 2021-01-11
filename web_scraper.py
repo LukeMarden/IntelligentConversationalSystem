@@ -11,9 +11,9 @@ videos = driver.find_elements_by_class_name('alt mtx')
 video_list = []
 
 for video in videos:
-    title = video.find_element_by_xpath('.//*[@id="results-from"]').text
-    views = video.find_element_by_xpath('.//*[@id="results-details"]/span[1]').text
-    when = video.find_element_by_xpath('.//*[@id="fare "]/span[2]').text
+    title = video.find_element_by_xpath('//*[@id="oft"]/tbody/tr[7]/td[1]').text
+    views = video.find_element_by_xpath('//*[@id="oft"]/tbody/tr[7]/td[3]').text
+    when = video.find_element_by_xpath('//*[@id="oft"]/tbody/tr[7]/td[5]').text
     #print(title, views, when)
     vid_item = {
         'title': title,
