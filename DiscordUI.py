@@ -1,16 +1,16 @@
 import discord
 from discord.ext import tasks, commands
-from knowledge_base import *
+from knowledge_base import TrainBooking
 import asyncio
 client = commands.Bot(command_prefix = '!')
-
+kb = {}
 
 
 @client.event
 async def on_ready():
     channel = client.get_channel(796742949223530519)
     print('Train bot is ready!')
-    await channel.send('Train bot is ready!')
+    # await channel.send('Train bot is ready!')
 
 @client.event
 async def on_member_join(member):
@@ -29,16 +29,25 @@ async def on_member_remove(member):
 @client.event
 async def on_message(message):
     channel = client.get_channel(796742949223530519)
+    # print(message.channel)
+    # print(await message.author.create_dm())
     if message.content == '!ping':
         channel.send('pong')
+    # elif(kb[message.author.id] is not None):
+    elif (message.channel is await message.author.create_dm()):
+#         process content in nlpu
+        print(message.author)
+
     elif(message.content == '!book'):
         channel = await message.author.create_dm()
-        await channel.send('hello')
-        print(message.author.id)
-
+        kb[message.author.id] = TrainBooking()
+        kb[message.author.id].knowledge = {}
+        kb[message.author.id].reset()
+        kb[message.author.id].run()
+        await channel.send('Hello how can I help you?')
+    # elif(message.content == '!book'):
     else:
         print(message.content)
-#     Add the nlpu stuff here
 
 async def message(message):
     channel = client.get_channel(796742949223530519)
