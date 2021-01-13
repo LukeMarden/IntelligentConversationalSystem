@@ -4,7 +4,7 @@ import pandas as pd
 
 # from web_scraper import driver
 
-URL = 'https://ojp.nationalrail.co.uk/service/timesandfares/NRW/IPS/today/1545/dep/200121/1745/dep'
+URL = 'https://ojp.nationalrail.co.uk/service/timesandfares/NRW/IPS/today/1545/dep'
 page = requests.get(URL)
 
 soup = BeautifulSoup(page.content, 'html.parser')
@@ -18,10 +18,10 @@ Trains_list = []
 #     print(train, end='\n'*2)
 for train in trains:
     depart = train.find(class_='dep').text.strip()
-    origin = train.find(class_='result-station').text.strip()
+    origin = train.find(class_='from').find(class_='result-station').text.strip()
     duration = train.find(class_='dur').text.strip()
     arrive = train.find(class_='arr').text.strip()
-    Destination = train.find(class_='result-station').text.strip()
+    Destination = train.find(class_='to').find(class_='result-station').text.strip()
     Faire = train.find(class_='opsingle').text.strip()
     Train_item = {
         'depart': depart,
