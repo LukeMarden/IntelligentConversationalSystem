@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from web_scraper import driver
+# from web_scraper import driver
 
-URL = 'https://ojp.nationalrail.co.uk/service/timesandfares/IPS/NRW/today/1545/dep'
+URL = 'https://ojp.nationalrail.co.uk/service/timesandfares/NRW/IPS/today/1545/dep/200121/1745/dep'
 page = requests.get(URL)
 
 soup = BeautifulSoup(page.content, 'html.parser')
@@ -36,4 +36,4 @@ for train in trains:
 
 df = pd.DataFrame(Trains_list)
 print(df)
-driver.quit()
+# driver.quit()

@@ -35,7 +35,10 @@ async def on_message(message):
         channel.send('pong')
     # elif(kb[message.author.id] is not None):
     elif (message.channel is await message.author.create_dm()):
+
 #         process content in nlpu
+
+
         print(message.author)
 
     elif(message.content == '!book'):
@@ -48,11 +51,6 @@ async def on_message(message):
     # elif(message.content == '!book'):
     else:
         print(message.content)
-
-async def message(message):
-    channel = client.get_channel(796742949223530519)
-    await channel.send(message)
-    print(message)
 
 def runClient():
     client.run('Nzk2NzQxOTg0NDQ1NzkyMjc2.X_cVyw.-2yYSLY34sKpL3keAFzEjwAWgdU')

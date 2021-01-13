@@ -13,6 +13,9 @@ class Ticket(Fact):
         self.returnTime = None
         self.returnDate = None
 
+    def generate_ticket_url(self):
+        print()
+
 
 class TrainBooking(KnowledgeEngine):
     @DefFacts()
