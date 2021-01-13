@@ -19,4 +19,7 @@ async def on_member_remove(member):
 async def ping(ctx):
     await ctx.send('pong')
 
+# async def on_message(message):
+
+
 client.run('Nzk2NzQxOTg0NDQ1NzkyMjc2.X_cVyw.-2yYSLY34sKpL3keAFzEjwAWgdU')
