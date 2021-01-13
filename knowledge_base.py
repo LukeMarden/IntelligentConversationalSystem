@@ -1,6 +1,5 @@
 from experta import *
 from random import choice
-from DiscordUI import message
 # from experta.watchers import RULES, AGENDA
 
 class Ticket(Fact):
@@ -178,8 +177,8 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['question'] = 'returnTicket'
             print()
 
-def process_entities(entities):
-    engine.dictionary = entities
+def process_entities(ticket):
+    engine.Ticket = ticket
     engine.reset()
     engine.run()
 
