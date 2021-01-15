@@ -25,7 +25,7 @@ class Ticket(Fact):
 
     def find_location_code(self, station):
         stations = json.load(open('train_codes.json', 'r'))
-        print(stations[station])
+        return stations[station]
 
 
 class TrainBooking(KnowledgeEngine):
