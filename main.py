@@ -1,15 +1,16 @@
 from knowledge_base import *
-from DiscrodBotPython.DiscordBot import *
-from web_scraper import *
-from nlpu import *
-from discord.ext import commands
+# from DiscrodBotPython.DiscordBot import *
+# from web_scraper import *
+# from nlpu import *
+# from discord.ext import commands
 
 if __name__ == '__main__':
-    #KB
-    engine = TrainBooking()
-    engine.knowledge = {}
-    engine.reset()  # Prepare the engine for the execution.
-    engine.run()  # Run it!
+    print()
+    # #KB
+    # engine = TrainBooking()
+    # engine.knowledge = {}
+    # engine.reset()  # Prepare the engine for the execution.
+    # engine.run()  # Run it!
 
 
 

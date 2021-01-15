@@ -1,4 +1,5 @@
 from experta import *
+import json
 from random import choice
 # from experta.watchers import RULES, AGENDA
 
@@ -14,7 +15,17 @@ class Ticket(Fact):
         self.returnDate = None
 
     def generate_ticket_url(self):
-        print()
+        url = 'https://ojp.nationalrail.co.uk/service/timesandfares/'
+        url += self.find_location_code(self.origin) + '/'
+        url += self.find_location_code(self.destination) + '/'
+        url += self.departDate + '/' + self.departTime + 'dep/'
+        if (self.isReturn is True):
+            url += self.returnDate + '/' + self.returnTime + '/' + 'dep/'
+        return url
+
+    def find_location_code(self, station):
+        stations = json.load(open('train_codes.json', 'r'))
+        print(stations[station])
 
 
 class TrainBooking(KnowledgeEngine):
