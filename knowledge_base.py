@@ -1,4 +1,5 @@
 from experta import *
+from webscrape3 import *
 import json
 from random import choice
 # from experta.watchers import RULES, AGENDA
@@ -18,14 +19,21 @@ class Ticket(Fact):
         url = 'https://ojp.nationalrail.co.uk/service/timesandfares/'
         url += self.find_location_code(self.origin) + '/'
         url += self.find_location_code(self.destination) + '/'
-        url += self.departDate + '/' + self.departTime + 'dep/'
+        url += self.departDate + '/' + self.departTime + '/dep/'
         if (self.isReturn is True):
-            url += self.returnDate + '/' + self.returnTime + '/' + 'dep/'
+            url += self.returnDate + '/' + self.returnTime + '/dep/'
+            print(url)
         return url
 
     def find_location_code(self, station):
         stations = json.load(open('train_codes.json', 'r'))
         return stations[station]
+
+    def find_cheapest(self):
+        cheapestTicket = CheapestTicket(self.generate_ticket_url(), self.isReturn)
+        cheapest = cheapestTicket.find_cheapest_ticket()
+        return cheapest
+
 
 
 class TrainBooking(KnowledgeEngine):

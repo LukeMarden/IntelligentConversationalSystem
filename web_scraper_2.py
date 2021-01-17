@@ -22,14 +22,14 @@ for train in trains:
     duration = train.find(class_='dur').text.strip()
     arrive = train.find(class_='arr').text.strip()
     Destination = train.find(class_='to').find(class_='result-station').text.strip()
-    Faire = train.find(class_='opsingle').text.strip()
+    Fare = train.find(class_='opsingle').text.strip()
     Train_item = {
         'depart': depart,
         'origin': origin,
         'duration': duration,
         'arrive': arrive,
         'Destination': Destination,
-        'Faire': Faire
+        'Fare': Fare
     }
 
     Trains_list.append(Train_item)
