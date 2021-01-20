@@ -34,7 +34,14 @@ class Ticket(Fact):
         cheapest = cheapestTicket.find_cheapest_ticket()
         return cheapest
 
+class Delay(Fact):
+    def __init__(self):
+        self.origin = None
+        self.destination = None
+        self.delay = None
 
+    def predict_delay(self):
+        print()
 
 class TrainBooking(KnowledgeEngine):
     @DefFacts()
