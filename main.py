@@ -1,4 +1,5 @@
 from knowledge_base import *
+from prediction import *
 # from DiscrodBotPython.DiscordBot import *
 # from web_scraper import *
 # from nlpu import *
@@ -11,16 +12,17 @@ if __name__ == '__main__':
     # engine.knowledge = {}
     # engine.reset()  # Prepare the engine for the execution.
     # engine.run()  # Run it!
-    ticket = Ticket()
-    ticket.name = 'name'
-    ticket.isReturn = True
-    ticket.origin = 'Norwich'
-    ticket.destination = 'Ipswich'
-    ticket.departDate = '300121'
-    ticket.departTime = '0000'
-    ticket.returnDate = '020221'
-    ticket.returnTime = '0000'
-    print(ticket.find_cheapest())
+    # ticket = Ticket()
+    # ticket.name = 'name'
+    # ticket.isReturn = True
+    # ticket.origin = 'Norwich'
+    # ticket.destination = 'Ipswich'
+    # ticket.departDate = '300121'
+    # ticket.departTime = '0000'
+    # ticket.returnDate = '020221'
+    # ticket.returnTime = '0000'
+    # print(ticket.find_cheapest())
+    pred = prediction()
 
 
     # #Discord

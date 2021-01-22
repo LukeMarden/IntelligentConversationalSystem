@@ -45,7 +45,7 @@ rid = "201701057101328"
 time = {}
 data = {}
 time[rid] = {
-    "rid": "201701057101328"
+    "rid": "201707287101237"
 }
 p = requests.post(time_api_url, headers=headers, auth=auths, json=time[rid])
 data[rid] = (json.loads(p.text))['serviceAttributesDetails']
@@ -57,14 +57,11 @@ df = pd.DataFrame(columns=['date','rid','toc','previousStation','currentStation'
 data[rid]['date_of_service'] = datetime.datetime.strptime(data[rid]['date_of_service'], "%Y-%m-%d")
 data[rid]['rid'] = int(data[rid]['rid'])
 for i in range(len(data[rid]['locations'])):
-    if (len(data[rid]['locations'][i]['gbtt_ptd']) == 4):
-        data[rid]['locations'][i]['gbtt_ptd'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_ptd'], format='%H%M')
-    if (len(data[rid]['locations'][i]['gbtt_pta']) == 4):
-        data[rid]['locations'][i]['gbtt_pta'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_pta'], format='%H%M')
-    if (len(data[rid]['locations'][i]['actual_td']) == 4):
-        data[rid]['locations'][i]['actual_td'] = pd.to_datetime(data[rid]['locations'][i]['actual_td'], format='%H%M')
-    if (len(data[rid]['locations'][i]['actual_ta']) == 4):
-        data[rid]['locations'][i]['actual_ta'] = pd.to_datetime(data[rid]['locations'][i]['actual_ta'], format='%H%M')
+
+    data[rid]['locations'][i]['gbtt_ptd'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_ptd'], format='%H%M', errors='coerce')
+    data[rid]['locations'][i]['gbtt_pta'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_pta'], format='%H%M', errors='coerce')
+    data[rid]['locations'][i]['actual_td'] = pd.to_datetime(data[rid]['locations'][i]['actual_td'], format='%H%M', errors='coerce')
+    data[rid]['locations'][i]['actual_ta'] = pd.to_datetime(data[rid]['locations'][i]['actual_ta'], format='%H%M', errors='coerce')
     data[rid]['locations'][i]['late_canc_reason'] = \
         int(data[rid]['locations'][i]['late_canc_reason']) if data[rid]['locations'][i]['late_canc_reason'] else 0
 
