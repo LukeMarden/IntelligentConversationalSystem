@@ -12,6 +12,14 @@ from datetime import datetime, date
 import datetime
 import pandas as pd
 from pandas import json_normalize
+import requests
+import json
+import datetime
+from datetime import datetime, date
+
+import pandas as pd
+from pandas import json_normalize
+import numpy as np
 headers = { "Content-Type": "application/json" }
 auths = ('lmarden7@gmail.com', 'Qwer1234@')
 # train_data = pd.read_csv('TrainData/a51/NRCH_LIVST_OD_a51_2017_1_1.csv')
@@ -40,50 +48,109 @@ auths = ('lmarden7@gmail.com', 'Qwer1234@')
 #
 # Yguess = mlp.predict(Xtest)
 # sqrt(mean_squared_error(Ytest, Yguess)), r2_score(Ytest, Yguess)
-time_api_url = "https://hsp-prod.rockshore.net/api/v1/serviceDetails"
-rid = "201701057101328"
-time = {}
-data = {}
-time[rid] = {
-    "rid": "201707287101237"
-}
-p = requests.post(time_api_url, headers=headers, auth=auths, json=time[rid])
-data[rid] = (json.loads(p.text))['serviceAttributesDetails']
-df = pd.DataFrame(columns=['date','rid','toc','previousStation','currentStation','nextStation','departureDelay',
-                           'arrivalDelay','previousTravelTime','nextTravelTime','previousDepartureDelay','delayReason',
-                           'nextArrivalDelay'])
-
-
-data[rid]['date_of_service'] = datetime.datetime.strptime(data[rid]['date_of_service'], "%Y-%m-%d")
-data[rid]['rid'] = int(data[rid]['rid'])
-for i in range(len(data[rid]['locations'])):
-
-    data[rid]['locations'][i]['gbtt_ptd'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_ptd'], format='%H%M', errors='coerce')
-    data[rid]['locations'][i]['gbtt_pta'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_pta'], format='%H%M', errors='coerce')
-    data[rid]['locations'][i]['actual_td'] = pd.to_datetime(data[rid]['locations'][i]['actual_td'], format='%H%M', errors='coerce')
-    data[rid]['locations'][i]['actual_ta'] = pd.to_datetime(data[rid]['locations'][i]['actual_ta'], format='%H%M', errors='coerce')
-    data[rid]['locations'][i]['late_canc_reason'] = \
-        int(data[rid]['locations'][i]['late_canc_reason']) if data[rid]['locations'][i]['late_canc_reason'] else 0
-
-df = pd.DataFrame.from_dict(data[rid], orient='columns')
-df = pd.concat([pd.DataFrame(data[rid]),
-                json_normalize(data[rid]['locations'])],
-               axis=1).drop('locations', 1)
-df['departureDelay'] = (df['actual_td'] - df['gbtt_ptd']).dt.seconds / 60
-df['arrivalDelay'] = (df['actual_ta'] - df['gbtt_pta']).dt.seconds / 60
-df['previousJourney'] = (df['gbtt_pta'] - df['gbtt_ptd'].shift()).dt.seconds/60
-df['nextJourney'] = (df['gbtt_pta'].shift(-1) - df['gbtt_ptd']).dt.seconds/60
-df['previousDepartureDelay'] = (df['actual_td'].shift() - df['gbtt_ptd'].shift()).dt.seconds / 60
-df['nextArrivalDelay'] = (df['actual_ta'].shift(-1) - df['gbtt_pta'].shift(-1)).dt.seconds / 60
-df['gbtt_ptd'] = df['gbtt_ptd'].dt.time
-df['gbtt_pta'] = df['gbtt_pta'].dt.time
-df['actual_td'] = df['actual_td'].dt.time
-df['actual_ta'] = df['actual_ta'].dt.time
-df['previousStation'] = df['location'].shift()
-df['nextStation'] = df['location'].shift(-1)
-
-print(df.dtypes)
-pd.set_option('display.max_rows', 15)
-pd.set_option('display.max_columns', 18)
-print(df)
+# time_api_url = "https://hsp-prod.rockshore.net/api/v1/serviceDetails"
+# rid = "201701057101328"
+# time = {}
+# data = {}
+# time[rid] = {
+#     "rid": "201707287101237"
+# }
+# p = requests.post(time_api_url, headers=headers, auth=auths, json=time[rid])
+# data[rid] = (json.loads(p.text))['serviceAttributesDetails']
+# df = pd.DataFrame(columns=['date','rid','toc','previousStation','currentStation','nextStation','departureDelay',
+#                            'arrivalDelay','previousTravelTime','nextTravelTime','previousDepartureDelay','delayReason',
+#                            'nextArrivalDelay'])
+#
+#
+# data[rid]['date_of_service'] = datetime.datetime.strptime(data[rid]['date_of_service'], "%Y-%m-%d")
+# data[rid]['rid'] = int(data[rid]['rid'])
+# for i in range(len(data[rid]['locations'])):
+#
+#     data[rid]['locations'][i]['gbtt_ptd'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_ptd'], format='%H%M', errors='coerce')
+#     data[rid]['locations'][i]['gbtt_pta'] = pd.to_datetime(data[rid]['locations'][i]['gbtt_pta'], format='%H%M', errors='coerce')
+#     data[rid]['locations'][i]['actual_td'] = pd.to_datetime(data[rid]['locations'][i]['actual_td'], format='%H%M', errors='coerce')
+#     data[rid]['locations'][i]['actual_ta'] = pd.to_datetime(data[rid]['locations'][i]['actual_ta'], format='%H%M', errors='coerce')
+#     data[rid]['locations'][i]['late_canc_reason'] = \
+#         int(data[rid]['locations'][i]['late_canc_reason']) if data[rid]['locations'][i]['late_canc_reason'] else 0
+#
+# df = pd.DataFrame.from_dict(data[rid], orient='columns')
+# df = pd.concat([pd.DataFrame(data[rid]),
+#                 json_normalize(data[rid]['locations'])],
+#                axis=1).drop('locations', 1)
+# df['departureDelay'] = (df['actual_td'] - df['gbtt_ptd']).dt.seconds / 60
+# df['arrivalDelay'] = (df['actual_ta'] - df['gbtt_pta']).dt.seconds / 60
+# df['previousJourney'] = (df['gbtt_pta'] - df['gbtt_ptd'].shift()).dt.seconds/60
+# df['nextJourney'] = (df['gbtt_pta'].shift(-1) - df['gbtt_ptd']).dt.seconds/60
+# df['previousDepartureDelay'] = (df['actual_td'].shift() - df['gbtt_ptd'].shift()).dt.seconds / 60
+# df['nextArrivalDelay'] = (df['actual_ta'].shift(-1) - df['gbtt_pta'].shift(-1)).dt.seconds / 60
+# df['gbtt_ptd'] = df['gbtt_ptd'].dt.time
+# df['gbtt_pta'] = df['gbtt_pta'].dt.time
+# df['actual_td'] = df['actual_td'].dt.time
+# df['actual_ta'] = df['actual_ta'].dt.time
+# df['previousStation'] = df['location'].shift()
+# df['nextStation'] = df['location'].shift(-1)
+#
+# print(df.dtypes)
+# pd.set_option('display.max_rows', 15)
+# pd.set_option('display.max_columns', 18)
+# print(df)
 # print(data[rid]['locations'][[0,1,2]]['location'])
+
+headers = { "Content-Type": "application/json" }
+auths = ('lmarden7@gmail.com', 'Qwer1234@')
+rids_api_url = "https://hsp-prod.rockshore.net/api/v1/serviceMetrics"
+time_api_url = "https://hsp-prod.rockshore.net/api/v1/serviceDetails"
+rids = {
+    "from_loc": 'NRW',
+    "to_loc": 'IPS',
+    "from_time": "0000",
+    "to_time": "2359",
+    "from_date": "2017-07-01",
+    "to_date": "2017-08-01",
+    "days": "WEEKDAY"
+}
+rid = []
+r = (requests.post(rids_api_url, headers=headers, auth=auths, json=rids)).json()
+for i in range(len(r['Services'])):
+    print(r['Services'][i]['serviceAttributesMetrics']['rids'])
+    rid.append(r['Services'][i]['serviceAttributesMetrics']['rids'])
+rid = np.concatenate(np.array(rid))
+data = {}
+time = {}
+datebase = pd.DataFrame()
+
+print(rid)
+for j in range(len(rid)):
+    # print(rid[j])
+    time[rid[j]] = {
+        "rid": rid[j]
+    }
+
+    p = requests.post(time_api_url, headers=headers, auth=auths, json=time[rid[j]])
+    data[rid[j]] = (json.loads(p.text))['serviceAttributesDetails']
+    data[rid[j]]['date_of_service'] = datetime.strptime(data[rid[j]]['date_of_service'], "%Y-%m-%d")
+    data[rid[j]]['rid'] = int(data[rid[j]]['rid'])
+    df = pd.DataFrame.from_dict(data[rid[j]], orient='columns')
+    df = pd.concat([pd.DataFrame(data[rid[j]]),
+                    json_normalize(data[rid[j]]['locations'])],
+                   axis=1).drop('locations', 1)
+    df['late_canc_reason'] = pd.to_numeric(df['late_canc_reason'], errors='coerce')
+    df['gbtt_ptd'] = pd.to_datetime(df['gbtt_ptd'], format='%H%M', errors='coerce') - \
+                     pd.to_datetime(df['gbtt_ptd'], format='%H%M', errors='coerce').dt.normalize()
+    df['gbtt_pta'] = pd.to_datetime(df['gbtt_pta'], format='%H%M', errors='coerce') - \
+                     pd.to_datetime(df['gbtt_pta'], format='%H%M', errors='coerce').dt.normalize()
+    df['actual_td'] = pd.to_datetime(df['actual_td'], format='%H%M', errors='coerce') - \
+                      pd.to_datetime(df['actual_td'], format='%H%M', errors='coerce').dt.normalize()
+    df['actual_ta'] = pd.to_datetime(df['actual_ta'], format='%H%M', errors='coerce') - \
+                      pd.to_datetime(df['actual_ta'], format='%H%M', errors='coerce').dt.normalize()
+    df['arrivalDelay'] = df['actual_ta'].dt.total_seconds()/60-df['gbtt_pta'].dt.total_seconds()/60
+    df['departureDelay'] = df['actual_td'].dt.total_seconds()/60 - df['gbtt_ptd'].dt.total_seconds()/60
+    df['previousJourney'] = df['gbtt_pta'].dt.total_seconds()/60 - df['gbtt_ptd'].shift().dt.total_seconds()/60
+    df['nextJourney'] = df['gbtt_pta'].shift(-1).dt.total_seconds()/60 - df['gbtt_ptd'].dt.total_seconds()/60
+    df['previousDepartureDelay'] = df['actual_td'].shift().dt.total_seconds()/60 - df['gbtt_ptd'].shift().dt.total_seconds()/60
+    df['nextArrivalDelay'] = df['actual_ta'].shift(-1).dt.total_seconds()/60 - df['gbtt_pta'].shift(-1).dt.total_seconds()/60
+    df['previousStation'] = df['location'].shift()
+    df['nextStation'] = df['location'].shift(-1)
+    datebase = datebase.append(df)
+
+datebase.to_csv('database.csv')

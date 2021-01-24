@@ -32,7 +32,7 @@ class prediction():
         r = (requests.post(rids_api_url, headers=headers, auth=auths, json=rids)).json()
         for i in range(len(r['Services'])):
             rid.append(r['Services'][i]['serviceAttributesMetrics']['rids'])
-        rid = (np.array(rid)).ravel()
+        rid = np.concatenate(np.array(rid))
         data = {}
         time = {}
         datebase = pd.DataFrame()
@@ -45,14 +45,11 @@ class prediction():
             data[rid[j]] = (json.loads(p.text))['serviceAttributesDetails']
             data[rid[j]]['date_of_service'] = datetime.strptime(data[rid[j]]['date_of_service'], "%Y-%m-%d")
             data[rid[j]]['rid'] = int(data[rid[j]]['rid'])
-            for i in range(len(data[rid[j]]['locations'])):
-                data[rid[j]]['locations'][i]['late_canc_reason'] = \
-                    int(data[rid[j]]['locations'][i]['late_canc_reason']) if data[rid[j]]['locations'][i]['late_canc_reason'] else 0
-
             df = pd.DataFrame.from_dict(data[rid[j]], orient='columns')
             df = pd.concat([pd.DataFrame(data[rid[j]]),
                             json_normalize(data[rid[j]]['locations'])],
                            axis=1).drop('locations', 1)
+            df['late_canc_reason'] = pd.to_numeric(df['late_canc_reason'], errors='coerce')
             df['gbtt_ptd'] = pd.to_datetime(df['gbtt_ptd'], format='%H%M', errors='coerce') - \
                              pd.to_datetime(df['gbtt_ptd'], format='%H%M', errors='coerce').dt.normalize()
             df['gbtt_pta'] = pd.to_datetime(df['gbtt_pta'], format='%H%M', errors='coerce') - \
