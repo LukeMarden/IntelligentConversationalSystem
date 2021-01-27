@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # ticket.returnDate = '020221'
     # ticket.returnTime = '0000'
     # print(ticket.find_cheapest())
-    pred = prediction()
+    pred = prediction('Norwich', 'Ipswich')
 
 
     # #Discord
