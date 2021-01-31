@@ -16,23 +16,6 @@ from nltk.stem.porter import PorterStemmer
 stemmer = PorterStemmer()
 
 
-# def get_entities(json):
-#     message = json['message']
-#     message = nlp(message)
-
-
-# noise_list = ["is", "a", "this", "..."]
-# def _remove_noise(input_text):
-#     words = input_text.split()
-#     noise_free_words = [word for word in words if word not in noise_list]
-#     noise_free_text = " ".join(noise_free_words)
-#     return noise_free_text
-#
-# _remove_noise("this is a sample text")
-
-# this can also be done in regex
-
-
 def tokenize(sentence):
     return nltk.word_tokenize(sentence)
 
@@ -51,9 +34,16 @@ def bag_of_words(tokenized_sentence, all_words):
     return bag
 
 
-# # Testing noise removal
+# noise_list = ["is", "a", "this", "..."]
+# def _remove_noise(input_text):
+#     words = input_text.split()
+#     noise_free_words = [word for word in words if word not in noise_list]
+#     noise_free_text = " ".join(noise_free_words)
+#     return noise_free_text
 #
-# noise_remove("testing this thing that is a test")
+# _remove_noise("testing this thing that is a test")
+
+# # Testing noise removal
 #
 # sentence = ["hello", "how", "are", "you"]
 # words = ["hi", "hello", "I", "you", "bye", "thank", "cool"]
@@ -75,7 +65,7 @@ def bag_of_words(tokenized_sentence, all_words):
 # object standardization
 
 # speech tagging
-with open('feedback.json', 'r') as f:
+with open('intents.json', 'r') as f:
     intents = json.load(f)
 
 all_words = []
@@ -96,6 +86,10 @@ all_words = sorted(set(all_words))
 print(all_words)
 tags = sorted(set(tags))
 print(tags)
+
+print(len(xy), "patterns")
+print(len(tags), "tags:", tags)
+print(len(all_words), "unique stemmed words:", all_words)
 
 # # for bag_of_words
 # x_train = []
