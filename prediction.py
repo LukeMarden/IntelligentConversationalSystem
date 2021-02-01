@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.neural_network import MLPRegressor
-from sklearn.feature_extraction import DictVectorizer
 from math import sqrt
+
 
 from sklearn.preprocessing import StandardScaler
 
@@ -80,33 +80,36 @@ class prediction():
         datebase.to_pickle('database.pkl')
 
     def plot_data(self):
-        self.data = pd.get_dummies(self.data, columns=['location'])
-        self.data = pd.get_dummies(self.data, columns=['previousStation'])
-        self.data = pd.get_dummies(self.data, columns=['nextStation'])
-        self.data = pd.get_dummies(self.data, columns=['toc_code'])
-        self.data = self.data.drop('date_of_service' ,axis=1)
+        # self.data = pd.get_dummies(self.data, columns=['location'])
+        # self.data = pd.get_dummies(self.data, columns=['previousStation'])
+        # self.data = pd.get_dummies(self.data, columns=['nextStation'])
+        # self.data = pd.get_dummies(self.data, columns=['toc_code'])
+
         self.data = self.data.drop('rid' ,axis=1)
         self.data['gbtt_ptd'] = self.data['gbtt_ptd'].dt.total_seconds()
         self.data['gbtt_pta'] = self.data['gbtt_pta'].dt.total_seconds()
         self.data['actual_td'] = self.data['actual_td'].dt.total_seconds()
         self.data['actual_ta'] = self.data['actual_ta'].dt.total_seconds()
+        self.data['late_canc_reason'] = self.data['late_canc_reason'].fillna(value=0)
+        self.data = self.data.drop(columns=['toc_code', 'location', 'nextStation', 'previousStation', 'date_of_service'])
+        self.data = self.data.reset_index()
+        self.data = self.data.dropna(axis=0)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', 15)
         # print(self.data)
         X = self.data.loc[:, self.data.columns != 'nextArrivalDelay']
         Y = self.data.iloc[:, 10]
-        print(X)
-        print(Y)
-        # vectorizer = DictVectorizer()
-        # vector_data = vectorizer.fit_transform(X)
-        # scaler = StandardScaler()
-        # scaler.fit(X)
-        # Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=0.5, random_state=1)
-        # Xtrain = scaler.transform(Xtrain)
-        # Xtest = scaler.transform(Xtest)
-        # mlp = MLPRegressor(hidden_layer_sizes=20,solver='sgd', max_iter=10000, activation='logistic',random_state=0, learning_rate_init=0.001,verbose = 'True',momentum=0.9, tol=0.0001, early_stopping=False)
-        # mlp.fit(Xtrain, Ytrain)
-        # Yguess = mlp.predict(Xtest)
-        # sqrt(mean_squared_error(Ytest, Yguess)), r2_score(Ytest, Yguess)
+        # print(X)
+        # print(Y)
+        scaler = StandardScaler()
+        scaler.fit(X)
+        Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=0.4, random_state=1)
+        Xtrain = scaler.transform(Xtrain)
+        Xtest = scaler.transform(Xtest)
+        mlp = MLPRegressor(hidden_layer_sizes=50,solver='sgd', max_iter=10000, activation='logistic',random_state=0, learning_rate_init=0.001,verbose = 'True',momentum=0.9, tol=0.00002, early_stopping=False)
+        mlp.fit(Xtrain, Ytrain)
+        Yguess = mlp.predict(Xtest)
+        print('RMSE = ', sqrt(mean_squared_error(Ytest, Yguess)), ', R^2 value = ', r2_score(Ytest, Yguess))
+
 
 

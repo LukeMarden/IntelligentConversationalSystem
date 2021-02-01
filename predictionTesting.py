@@ -103,21 +103,22 @@ time_api_url = "https://hsp-prod.rockshore.net/api/v1/serviceDetails"
 rids = {
     "from_loc": 'NRW',
     "to_loc": 'IPS',
-    "from_time": "0000",
-    "to_time": "2359",
-    "from_date": "2017-07-01",
-    "to_date": "2017-08-01",
+    "from_time": "1629",
+    "to_time": "2000",
+    "from_date": "2021-02-01",
+    "to_date": "2021-02-01",
     "days": "WEEKDAY"
 }
 rid = []
 r = (requests.post(rids_api_url, headers=headers, auth=auths, json=rids)).json()
-for i in range(len(r['Services'])):
-    print(r['Services'][i]['serviceAttributesMetrics']['rids'])
-    rid.append(r['Services'][i]['serviceAttributesMetrics']['rids'])
-rid = np.concatenate(np.array(rid))
-data = {}
-time = {}
-datebase = pd.DataFrame()
+print(r)
+# for i in range(len(r['Services'])):
+#     print(r['Services'][i]['serviceAttributesMetrics']['rids'])
+#     rid.append(r['Services'][i]['serviceAttributesMetrics']['rids'])
+# rid = np.concatenate(np.array(rid))
+# data = {}
+# time = {}
+# datebase = pd.DataFrame()
 
 print(rid)
 for j in range(len(rid)):
