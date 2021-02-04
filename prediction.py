@@ -18,8 +18,8 @@ from pandas import json_normalize
 import numpy as np
 class prediction():
     def __init__(self, station1, station2, numberOfStops, delayStation, delay, arrivalTime, delayCode=0):
-        # self.data = self.load_data(station1, station2)
-        self.data = pd.read_pickle('database.pkl')
+        self.data = self.load_data(station1, station2)
+        # self.data = pd.read_pickle('database.pkl')
         self.journey = self.find_journey(numberOfStops, delayStation, delay, delayCode)
         # self.predictionModel = self.accurate_predict_model()
         self.predictionModel = self.practical_predict_model()
@@ -38,9 +38,9 @@ class prediction():
             "from_loc": self.find_location_code(station1),
             "to_loc": self.find_location_code(station2),
             "from_time": "0000",
-            "to_time": "1200",
+            "to_time": "2359",
             "from_date": "2017-08-01",
-            "to_date": "2017-10-01",
+            "to_date": "2017-08-03",
             "days": "WEEKDAY"
         }
         rid = []
@@ -109,10 +109,6 @@ class prediction():
         self.journeyData = self.journeyData.assign(late_canc_reason=delayCode)
         self.journeyData.loc[self.journeyData['location'] == self.find_location_code(delayStation),
                              'departureDelay'] = delay*60
-
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', 15)
-        print(self.journeyData)
 
     def accurate_predict_model(self):
         # self.data = pd.get_dummies(self.data, columns=['location'])
@@ -205,5 +201,6 @@ class prediction():
         predictedArrivalTime = time.strftime('%H:%M:%S', time.gmtime(totalSeconds))
         Z.to_csv('Z.csv')
         print(predictedArrivalTime)
+        return predictedArrivalTime
 
 
