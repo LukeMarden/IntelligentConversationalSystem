@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # ticket.returnDate = '020221'
     # ticket.returnTime = '0000'
     # print(ticket.find_cheapest())
-    pred = prediction('Norwich', 'Ipswich')
+    pred = prediction('Norwich', 'Ingatestone', 9, 'Diss', 10, 1200) #check that it contains all these stations
 
 
     # #Discord
