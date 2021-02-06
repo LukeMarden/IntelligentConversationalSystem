@@ -53,11 +53,17 @@ class Delay(Fact):
 class TrainBooking(KnowledgeEngine):
     @DefFacts()
     def _initial_action(self):
-        self.ticket = Ticket()
-        yield Fact(action="greet")
-
-        if not 'question' in self.knowledge:
-            self.knowledge['question'] = str()
+        self.knowledge['question'] = None
+        self.service = None
+        yield Fact(action="book")
+        if self.knowledge['service'] == 'book':
+            self.service = Ticket()
+            yield Fact(action="book")
+            print('book')
+        elif self.knowledge['service'] == 'predict':
+            self.service = Delay()
+            yield Fact(action='predict')
+            print('predict')
 
     # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
     #     # def ask_name(self):
@@ -74,9 +80,9 @@ class TrainBooking(KnowledgeEngine):
     # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
     # def name(self):
     #     print("test")
-    #     if self.ticket.name is not None:
-    #         self.declare(Fact(name = self.ticket.name))
-    #         self.knowledge['name'] = self.ticket.name
+    #     if self.service.name is not None:
+    #         self.declare(Fact(name = self.service.name))
+    #         self.knowledge['name'] = self.service.name
     #     else:
     #         if self.knowledge['question'] == 'askName':
     #             return 'ask name'
@@ -99,9 +105,9 @@ class TrainBooking(KnowledgeEngine):
 
     @Rule(NOT(Fact(destination=W())), NOT(Fact(origin=W())))
     def destination(self):
-        if self.ticket.destination is not None:
-            self.declare(Fact(destination = self.ticket.destination))
-            self.knowledge['destination'] = self.ticket.destination
+        if self.service.destination is not None:
+            self.declare(Fact(destination = self.service.destination))
+            self.knowledge['destination'] = self.service.destination
         else:
             if self.knowledge['question'] == 'destination':
                 print()
@@ -111,9 +117,9 @@ class TrainBooking(KnowledgeEngine):
 
     @Rule(Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
     def origin(self):
-        if self.ticket.origin is not None:
-            self.declare(Fact(destination = self.ticket.origin))
-            self.knowledge['destination'] = self.ticket.origin
+        if self.service.origin is not None:
+            self.declare(Fact(destination = self.service.origin))
+            self.knowledge['destination'] = self.service.origin
         else:
             if self.knowledge['question'] == 'origin':
                 print()
@@ -124,9 +130,9 @@ class TrainBooking(KnowledgeEngine):
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), NOT(Fact(isReturn=W())))
     def isReturn(self):
-        if self.ticket.destination is not None:
-            self.declare(Fact(isReturn = self.ticket.isReturn))
-            self.knowledge['return'] = self.ticket.isReturn
+        if self.service.destination is not None:
+            self.declare(Fact(isReturn = self.service.isReturn))
+            self.knowledge['return'] = self.service.isReturn
         else:
             if self.knowledge['question'] == 'return':
                 print()
@@ -138,9 +144,9 @@ class TrainBooking(KnowledgeEngine):
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
           NOT(Fact(departDate=W())), NOT(Fact(departTime=W())))
     def departDate(self):
-        if self.ticket.departDate is not None:
-            self.declare(Fact(departDate=self.ticket.departDate))
-            self.knowledge['departDate'] = self.ticket.departDate
+        if self.service.departDate is not None:
+            self.declare(Fact(departDate=self.service.departDate))
+            self.knowledge['departDate'] = self.service.departDate
         else:
             if self.knowledge['question'] == 'departDate':
                 print()
@@ -152,9 +158,9 @@ class TrainBooking(KnowledgeEngine):
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
           Fact(departDate=MATCH.departDate), NOT(Fact(departTime=W())))
     def departTime(self):
-        if self.ticket.departTime is not None:
-            self.declare(Fact(departTime=self.ticket.departTime))
-            self.knowledge['departTime'] = self.ticket.departTime
+        if self.service.departTime is not None:
+            self.declare(Fact(departTime=self.service.departTime))
+            self.knowledge['departTime'] = self.service.departTime
         else:
             if self.knowledge['question'] == 'departTime':
                 print()
@@ -167,9 +173,9 @@ class TrainBooking(KnowledgeEngine):
           Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime),
           NOT(Fact(returnDate=W())), NOT(Fact(returnTime=W())))
     def returnDate(self):
-        if self.ticket.returnDate is not None:
-            self.declare(Fact(returnDate=self.ticket.returnDate))
-            self.knowledge['returnDate'] = self.ticket.returnDate
+        if self.service.returnDate is not None:
+            self.declare(Fact(returnDate=self.service.returnDate))
+            self.knowledge['returnDate'] = self.service.returnDate
         else:
             if self.knowledge['question'] == 'returnDate':
                 print()
@@ -182,9 +188,9 @@ class TrainBooking(KnowledgeEngine):
           Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime),
           Fact(returnDate=MATCH.returnDate), NOT(Fact(returnTime=W())))
     def returnTime(self):
-        if self.ticket.returnTime is not None:
-            self.declare(Fact(returnTime=self.ticket.returnTime))
-            self.knowledge['returnTime'] = self.ticket.returnTime
+        if self.service.returnTime is not None:
+            self.declare(Fact(returnTime=self.service.returnTime))
+            self.knowledge['returnTime'] = self.service.returnTime
         else:
             if self.knowledge['question'] == 'returnTime':
                 print()

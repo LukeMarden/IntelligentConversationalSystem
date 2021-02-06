@@ -44,11 +44,18 @@ async def on_message(message):
     elif(message.content == '!book'):
         channel = await message.author.create_dm()
         kb[message.author.id] = TrainBooking()
-        kb[message.author.id].knowledge = {}
+        kb[message.author.id].knowledge = {'service':'book'}
         kb[message.author.id].reset()
         kb[message.author.id].run()
-        await channel.send('Hello how can I help you?')
+        await channel.send('Hello how can I help you? (book)')
     # elif(message.content == '!book'):
+    elif(message.content == '!predict'):
+        channel = await message.author.create_dm()
+        kb[message.author.id] = TrainBooking()
+        kb[message.author.id].knowledge = {'service': 'predict'}
+        kb[message.author.id].reset()
+        kb[message.author.id].run()
+        await channel.send('Hello how can I help you? (predict)')
     else:
         print(message.content)
 
