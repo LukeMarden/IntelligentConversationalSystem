@@ -54,8 +54,9 @@ class TrainBooking(KnowledgeEngine):
     @DefFacts()
     def _initial_action(self):
         self.knowledge['question'] = None
+        self.ticket = Ticket()
+        self.delay = Delay()
         self.service = None
-        yield Fact(action="book")
         if self.knowledge['service'] == 'book':
             self.service = Ticket()
             yield Fact(action="book")
@@ -110,10 +111,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['destination'] = self.service.destination
         else:
             if self.knowledge['question'] == 'destination':
-                print()
+                self.knowledge['response'] = 'Can I get your destination please?'
             else:
                 self.knowledge['question'] = 'destination'
-                print()
+                self.knowledge['response'] = 'Can I get your destination please?'
 
     @Rule(Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
     def origin(self):
@@ -122,10 +123,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['destination'] = self.service.origin
         else:
             if self.knowledge['question'] == 'origin':
-                print()
+                self.knowledge['response'] = 'Can I get your origin please?'
             else:
                 self.knowledge['question'] = 'origin'
-                print()
+                self.knowledge['response'] = 'Can I get your origin please?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), NOT(Fact(isReturn=W())))
@@ -135,10 +136,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['return'] = self.service.isReturn
         else:
             if self.knowledge['question'] == 'return':
-                print()
+                self.knowledge['response'] = 'Would you like a return ticket?'
             else:
                 self.knowledge['question'] = 'return'
-                print()
+                self.knowledge['response'] = 'Would you like a return ticket?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
@@ -149,10 +150,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['departDate'] = self.service.departDate
         else:
             if self.knowledge['question'] == 'departDate':
-                print()
+                self.knowledge['response'] = 'What date you like to depart?'
             else:
                 self.knowledge['question'] = 'departDate'
-                print()
+                self.knowledge['response'] = 'What date you like to depart?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
@@ -163,10 +164,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['departTime'] = self.service.departTime
         else:
             if self.knowledge['question'] == 'departTime':
-                print()
+                self.knowledge['response'] = 'What time would you like to depart?'
             else:
                 self.knowledge['question'] = 'departTime'
-                print()
+                self.knowledge['response'] = 'What time would you like to depart?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -178,10 +179,10 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['returnDate'] = self.service.returnDate
         else:
             if self.knowledge['question'] == 'returnDate':
-                print()
+                self.knowledge['response'] = 'What date would you like to return?'
             else:
                 self.knowledge['question'] = 'returnDate'
-                print()
+                self.knowledge['response'] = 'What date would you like to return?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -193,20 +194,20 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['returnTime'] = self.service.returnTime
         else:
             if self.knowledge['question'] == 'returnTime':
-                print()
+                self.knowledge['response'] = 'What time would you like to return?'
             else:
                 self.knowledge['question'] = 'returnTime'
-                print()
+                self.knowledge['response'] = 'What time would you like to return?'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=False),
           Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime))
     def singleTicket(self):
         if self.knowledge['question'] == 'singleTicket':
-            print()
+            self.knowledge['response'] = self.service.find_cheapest()
         else:
             self.knowledge['question'] = 'singleTicket'
-            print()
+            self.knowledge['response'] = self.service.find_cheapest()
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -214,53 +215,53 @@ class TrainBooking(KnowledgeEngine):
           Fact(returnDate=MATCH.returnDate), Fact(returnTime=MATCH.returnTime))
     def returnTicket(self):
         if self.knowledge['question'] == 'returnTicket':
-            print()
+            self.knowledge['response'] = self.service.find_cheapest()
         else:
             self.knowledge['question'] = 'returnTicket'
-            print()
+            self.knowledge['response'] = self.service.find_cheapest()
 
     @Rule(Fact(action='predict'), NOT(Fact(delay=W())))
     def askDelay(self):
         if self.knowledge['question'] == 'delayTime':
-            print()
+            self.knowledge['response'] = 'How long has the train been delayed?'
         else:
             self.knowledge['question'] = 'delayTime'
-            print()
+            self.knowledge['response'] = 'How long has the train been delayed?'
 
     @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), NOT(Fact(numberOfStops=W())))
     def askNumberOfStops(self):
         if self.knowledge['question'] == 'numberOfStops':
-            print()
+            self.knowledge['response'] = 'How many stops are there on the overall journey?'
         else:
             self.knowledge['question'] = 'numberOfStops'
-            print()
+            self.knowledge['response'] = 'How many stops are there on the overall journey?'
 
     @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
           NOT(Fact(delayStation=W())))
     def askDelayStation(self):
         if self.knowledge['question'] == 'delayStation':
-            print()
+            self.knowledge['response'] = 'Which station has the delay been announced from?'
         else:
             self.knowledge['question'] = 'delayStation'
-            print()
+            self.knowledge['response'] = 'Which station has the delay been announced from?'
 
     @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), NOT(Fact(arrivalTime=W())))
     def askArrivalTime(self):
         if self.knowledge['question'] == 'arrivalTime':
-            print()
+            self.knowledge['response'] = 'What time were you supposed to arrive at your destination?'
         else:
             self.knowledge['question'] = 'arrivalTime'
-            print()
+            self.knowledge['response'] = 'What time were you supposed to arrive at your destination?'
 
     @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), NOT(Fact(delayCode=W())))
     def askDelayCode(self):
         if self.knowledge['question'] == 'delayCode':
-            print()
+            self.knowledge['response'] = 'Do you know your delay code? If not type 0'
         else:
             self.knowledge['question'] = 'delayCode'
-            print()
+            self.knowledge['response'] = 'Do you know your delay code? If not type 0'
 
     @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))
@@ -271,17 +272,38 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['question'] = 'delayCode'
             print()
 
-def process_entities(ticket):
-    engine.Ticket = ticket
-    engine.reset()
-    engine.run()
+class Greetings(KnowledgeEngine):
+    @DefFacts()
+    def _initial_action(self):
+        self.knowledge['question'] = None
+        self.service = None
+        if self.knowledge['service'] == 'book':
+            self.service = Ticket()
+            yield Fact(action="book")
+            print('book')
+        elif self.knowledge['service'] == 'predict':
+            self.service = Delay()
+            yield Fact(action='predict')
+            print('predict')
+    @Rule(Fact(action='book'), NOT(Fact(name=W())))
+    def ask_name(self):
+        print('test')
 
-
-
+    @Rule(Fact(action='greet'), NOT(Fact(location=W())))
+    def ask_location(self):
+        self.declare(Fact(location=input("Where are you? ")))
+    @Rule(Fact(action='greet'), Fact(name=MATCH.name),Fact(location=MATCH.location))
+    def greet(self, name, location):
+        print("Hi %s! How is the weather in %s?" % (name, location))
 
 if __name__ == '__main__':
-    engine = TrainBooking()
-    engine.knowledge = {}
-    engine.reset()  # Prepare the engine for the execution.
-    engine.run() # Run it!
+    # engine = TrainBooking()
+    # engine.knowledge = {'service':'book'}
+    # engine.reset()  # Prepare the engine for the execution.
+    # engine.run() # Run it!
 
+    engine = TrainBooking()
+    engine.knowledge = {'service': 'book'}
+    engine.reset()  # Prepare the engine for the execution.
+    engine.run()  # Run it!
+    print(engine.knowledge['response'])

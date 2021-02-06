@@ -35,10 +35,11 @@ async def on_message(message):
         channel.send('pong')
     # elif(kb[message.author.id] is not None):
     elif (message.channel is await message.author.create_dm()):
-
+        channel = message.channel
 #         process content in nlpu
-
-
+        kb[message.author.id].reset()
+        kb[message.author.id].run()
+        await channel.send(kb[message.author.id].knowledge['response'])
         print(message.author)
 
     elif(message.content == '!book'):
@@ -47,7 +48,7 @@ async def on_message(message):
         kb[message.author.id].knowledge = {'service':'book'}
         kb[message.author.id].reset()
         kb[message.author.id].run()
-        await channel.send('Hello how can I help you? (book)')
+        await channel.send(kb[message.author.id].knowledge['response'])
     # elif(message.content == '!book'):
     elif(message.content == '!predict'):
         channel = await message.author.create_dm()
@@ -55,7 +56,7 @@ async def on_message(message):
         kb[message.author.id].knowledge = {'service': 'predict'}
         kb[message.author.id].reset()
         kb[message.author.id].run()
-        await channel.send('Hello how can I help you? (predict)')
+        await channel.send(kb[message.author.id].run())
     else:
         print(message.content)
 
