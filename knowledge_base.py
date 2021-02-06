@@ -1,12 +1,13 @@
 from experta import *
 from webscrape3 import *
+from prediction import *
 import json
 from random import choice
 # from experta.watchers import RULES, AGENDA
 
 class Ticket(Fact):
     def __init__(self):
-        self.name = None
+        # self.name = None
         self.isReturn = None
         self.origin = None
         self.destination = None
@@ -39,9 +40,15 @@ class Delay(Fact):
         self.origin = None
         self.destination = None
         self.delay = None
+        self.numberOfStops = None
+        self.delayStation = None
+        self.arrivalTime = None
+        self.delayCode = None
 
     def predict_delay(self):
-        print()
+        self.delayPrediction = prediction(self.origin, self.destination, self.numberOfStops,
+                                self.delayStation, self.delay, self.arrivalTime)
+        return self.delayPrediction.time
 
 class TrainBooking(KnowledgeEngine):
     @DefFacts()
@@ -53,44 +60,44 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['question'] = str()
 
     # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
-    # def ask_name(self):
-    #     self.declare(Fact(name=input("What's your name? ")))
-    #
-    # @Rule(Fact(action='greet'), NOT(Fact(location=W())))
-    # def ask_location(self): self.declare(Fact(location=input("Where are you? ")))
-    #
-    # @Rule(Fact(action='greet'), Fact(name=MATCH.name),
-    #       Fact(location=MATCH.location))
-    # def greet(self, name, location):
-    #     print("Hi %s! How is the weather in %s?" % (name, location))
+    #     # def ask_name(self):
+    #     #     self.declare(Fact(name=input("What's your name? ")))
+    #     #
+    #     # @Rule(Fact(action='greet'), NOT(Fact(location=W())))
+    #     # def ask_location(self): self.declare(Fact(location=input("Where are you? ")))
+    #     #
+    #     # @Rule(Fact(action='greet'), Fact(name=MATCH.name),
+    #     #       Fact(location=MATCH.location))
+    #     # def greet(self, name, location):
+    #     #     print("Hi %s! How is the weather in %s?" % (name, location))
 
-    @Rule(Fact(action='greet'), NOT(Fact(name=W())))
-    def name(self):
-        print("test")
-        if self.ticket.name is not None:
-            self.declare(Fact(name = self.ticket.name))
-            self.knowledge['name'] = self.ticket.name
-        else:
-            if self.knowledge['question'] == 'askName':
-                return 'ask name'
-                # Message.emit_feedback('display received message', 'unknown_message')
-            else:
-                self.knowledge['question'] = 'askName'
-                return 'ask name'
-                # Message.emit_feedback('display received message', 'ask_name')
+    # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
+    # def name(self):
+    #     print("test")
+    #     if self.ticket.name is not None:
+    #         self.declare(Fact(name = self.ticket.name))
+    #         self.knowledge['name'] = self.ticket.name
+    #     else:
+    #         if self.knowledge['question'] == 'askName':
+    #             return 'ask name'
+    #             # Message.emit_feedback('display received message', 'unknown_message')
+    #         else:
+    #             self.knowledge['question'] = 'askName'
+    #             return 'ask name'
+    #             # Message.emit_feedback('display received message', 'ask_name')
 
-    @Rule(Fact(action='greet'), Fact(name = MATCH.name))
-    def service(self):
-        print("TEST")
-        if self.knowledge['question'] == 'askService':
-            print("AskService1")
-            # Message.emit_feedback('display received message', 'unknown_message')
-        else:
-            self.knowledge['question'] = 'askService'
-            print("AskService2")
-            # Message.emit_feedback('display received message', 'ask_booking')
+    # @Rule(Fact(action='greet'), Fact(name = MATCH.name))
+    # def service(self):
+    #     print("TEST")
+    #     if self.knowledge['question'] == 'askService':
+    #         print("AskService1")
+    #         # Message.emit_feedback('display received message', 'unknown_message')
+    #     else:
+    #         self.knowledge['question'] = 'askService'
+    #         print("AskService2")
+    #         # Message.emit_feedback('display received message', 'ask_booking')
 
-    @Rule(Fact(action='book'), NOT(Fact(destination=W())), NOT(Fact(origin=W())))
+    @Rule(NOT(Fact(destination=W())), NOT(Fact(origin=W())))
     def destination(self):
         if self.ticket.destination is not None:
             self.declare(Fact(destination = self.ticket.destination))
@@ -102,7 +109,7 @@ class TrainBooking(KnowledgeEngine):
                 self.knowledge['question'] = 'destination'
                 print()
 
-    @Rule(Fact(action='book'), Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
+    @Rule(Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
     def origin(self):
         if self.ticket.origin is not None:
             self.declare(Fact(destination = self.ticket.origin))
@@ -204,6 +211,58 @@ class TrainBooking(KnowledgeEngine):
             print()
         else:
             self.knowledge['question'] = 'returnTicket'
+            print()
+
+    @Rule(Fact(action='predict'), NOT(Fact(delay=W())))
+    def askDelay(self):
+        if self.knowledge['question'] == 'delayTime':
+            print()
+        else:
+            self.knowledge['question'] = 'delayTime'
+            print()
+
+    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), NOT(Fact(numberOfStops=W())))
+    def askNumberOfStops(self):
+        if self.knowledge['question'] == 'numberOfStops':
+            print()
+        else:
+            self.knowledge['question'] = 'numberOfStops'
+            print()
+
+    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+          NOT(Fact(delayStation=W())))
+    def askDelayStation(self):
+        if self.knowledge['question'] == 'delayStation':
+            print()
+        else:
+            self.knowledge['question'] = 'delayStation'
+            print()
+
+    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+          Fact(delayStation=MATCH.delayStation), NOT(Fact(arrivalTime=W())))
+    def askArrivalTime(self):
+        if self.knowledge['question'] == 'arrivalTime':
+            print()
+        else:
+            self.knowledge['question'] = 'arrivalTime'
+            print()
+
+    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+          Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), NOT(Fact(delayCode=W())))
+    def askDelayCode(self):
+        if self.knowledge['question'] == 'delayCode':
+            print()
+        else:
+            self.knowledge['question'] = 'delayCode'
+            print()
+
+    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+          Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))
+    def predict(self):
+        if self.knowledge['question'] == 'delayCode':
+            print()
+        else:
+            self.knowledge['question'] = 'delayCode'
             print()
 
 def process_entities(ticket):
