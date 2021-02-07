@@ -11,34 +11,15 @@
         "Good day"
       ],
       "responses": [
-        "Hello!",
-        "Hey!",
-        "Hi!",
-        "How are you",
-        "Good day",
-        "Hi there, how can I help?"
-      ]
-    },
-    {
-      "tag": "askService",
-      "patterns": [
-        "Bye",
-        "See you later",
-        "Goodbye"
-      ],
-      "responses": [
-        "%s, are you looking to book a train ticket or see potential train delays?",
-        "Would you like to book a train ticket or see potential train delays, %s?",
-        "%s, are you interested in booking train tickets or look at predicted train delays?"
+        "Hello! If you're looking to book a train ticket please write !book, if you're looking to predict a delay proceed with !predict"
       ]
     },
     {
       "tag": "destination",
       "patterns": [
-        "Thanks",
-        "Thank you",
-        "That's helpful",
-        "Thanks a lot!"
+        "I am travelling to Norwich",
+        "I am going to Ipswich",
+        "I am looking to arrive in Aldershot"
       ],
       "responses": [
         "What station are you arriving to?",
@@ -49,6 +30,10 @@
     {
       "tag": "origin",
       "patterns": [
+        "London to York",
+        "I am travelling from Norwich",
+        "I am leaving from Norwich",
+        "I want to leave Norwich"
 
       ],
       "responses": [
@@ -60,7 +45,10 @@
     {
       "tag": "return",
       "patterns": [
-
+        "Yes, I am looking for a return journey",
+        "Yes, I am looking to return",
+        "I want a return ticket",
+        "No, I don't want a return ticket"
       ],
       "responses": [
         "Are you looking to have a return journey?",

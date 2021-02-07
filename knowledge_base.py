@@ -3,6 +3,8 @@ from webscrape3 import *
 from prediction import *
 import json
 from random import choice
+
+
 # from experta.watchers import RULES, AGENDA
 
 class Ticket(Fact):
@@ -35,6 +37,7 @@ class Ticket(Fact):
         cheapest = cheapestTicket.find_cheapest_ticket()
         return cheapest
 
+
 class Delay(Fact):
     def __init__(self):
         self.origin = None
@@ -47,8 +50,9 @@ class Delay(Fact):
 
     def predict_delay(self):
         self.delayPrediction = prediction(self.origin, self.destination, self.numberOfStops,
-                                self.delayStation, self.delay, self.arrivalTime)
+                                          self.delayStation, self.delay, self.arrivalTime)
         return self.delayPrediction.time
+
 
 class TrainBooking(KnowledgeEngine):
     @DefFacts()
@@ -107,7 +111,7 @@ class TrainBooking(KnowledgeEngine):
     @Rule(NOT(Fact(destination=W())), NOT(Fact(origin=W())))
     def destination(self):
         if self.service.destination is not None:
-            self.declare(Fact(destination = self.service.destination))
+            self.declare(Fact(destination=self.service.destination))
             self.knowledge['destination'] = self.service.destination
         else:
             if self.knowledge['question'] == 'destination':
@@ -119,7 +123,7 @@ class TrainBooking(KnowledgeEngine):
     @Rule(Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
     def origin(self):
         if self.service.origin is not None:
-            self.declare(Fact(destination = self.service.origin))
+            self.declare(Fact(destination=self.service.origin))
             self.knowledge['destination'] = self.service.origin
         else:
             if self.knowledge['question'] == 'origin':
@@ -132,7 +136,7 @@ class TrainBooking(KnowledgeEngine):
           Fact(origin=MATCH.origin), NOT(Fact(isReturn=W())))
     def isReturn(self):
         if self.service.destination is not None:
-            self.declare(Fact(isReturn = self.service.isReturn))
+            self.declare(Fact(isReturn=self.service.isReturn))
             self.knowledge['return'] = self.service.isReturn
         else:
             if self.knowledge['question'] == 'return':
@@ -272,6 +276,7 @@ class TrainBooking(KnowledgeEngine):
             self.knowledge['question'] = 'delayCode'
             print()
 
+
 class Greetings(KnowledgeEngine):
     @DefFacts()
     def _initial_action(self):
@@ -285,6 +290,7 @@ class Greetings(KnowledgeEngine):
             self.service = Delay()
             yield Fact(action='predict')
             print('predict')
+
     @Rule(Fact(action='book'), NOT(Fact(name=W())))
     def ask_name(self):
         print('test')
@@ -292,9 +298,11 @@ class Greetings(KnowledgeEngine):
     @Rule(Fact(action='greet'), NOT(Fact(location=W())))
     def ask_location(self):
         self.declare(Fact(location=input("Where are you? ")))
-    @Rule(Fact(action='greet'), Fact(name=MATCH.name),Fact(location=MATCH.location))
+
+    @Rule(Fact(action='greet'), Fact(name=MATCH.name), Fact(location=MATCH.location))
     def greet(self, name, location):
         print("Hi %s! How is the weather in %s?" % (name, location))
+
 
 if __name__ == '__main__':
     # engine = TrainBooking()
