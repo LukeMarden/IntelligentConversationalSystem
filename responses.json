@@ -1,0 +1,74 @@
+{
+  "greeting": [
+    "Hello!",
+    "Hey!",
+    "Hi!",
+    "How are you",
+    "Good day"
+  ],
+  "askService": [
+    "%s, are you looking to book a train ticket or see potential train delays?",
+    "Would you like to book a train ticket or see potential train delays, %s?",
+    "%s, are you interested in booking train tickets or look at predicted train delays?"
+  ],
+  "destination": [
+    "What station are you arriving to?",
+    "What destination are you travelling to?",
+    "What is your final destination?"
+  ],
+  "origin": [
+    "What station are you travelling from?",
+    "What is your origin station?",
+    "What station are you leaving from?"
+  ],
+  "return": [
+    "Are you looking to have a return journey?",
+    "Is your journey a return journey?",
+    "Are you planning on a return journey?"
+  ],
+  "departDate": [
+    "What date would you like to leave on?",
+    "What date are you planning to depart on?",
+    "What date would you like to depart on?"
+  ],
+  "departTime": [
+    "What time would you like to leave at?)",
+    "What time are you looking to depart at?",
+    "What is your preferred departure time?"
+  ],
+  "returnDate": [
+    "What would be your preferred return date?",
+    "What date would you like to return on?",
+    "When would you like your return date to be?"
+  ],
+  "returnTime": [
+    "By what time would you want to return?",
+    "What time would you like to return at?"
+  ],
+  "singleTicket": [
+    "This is the cheapest single ticket we could find!",
+    "We have found this to be the cheapest single ticket!"
+  ],
+  "returnTicket": [
+    "This is the cheapest return ticket we could find!",
+    "We have found this to be the cheapest return ticket!"
+  ],
+  "delayTime": [
+    "How long has the train been delayed for?",
+    "How long was the delay on the train?"
+  ],
+  "numberOfStops": [
+    "How many stops does the train have to go through?",
+    "What is the number of stops that the train has to go through?"
+  ],
+  "delayStation": [
+    "What"
+  ],
+  "arrivalTime": [
+
+  ],
+  "delayCode": [
+    "If you know what the delay code is, could you please type it in? Otherwise continue with 0"
+
+  ]
+}

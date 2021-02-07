@@ -1,0 +1,163 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hey",
+        "Hello",
+        "How are you",
+        "Is anyone there?",
+        "Good day"
+      ],
+      "responses": [
+        "Hello!",
+        "Hey!",
+        "Hi!",
+        "How are you",
+        "Good day",
+        "Hi there, how can I help?"
+      ]
+    },
+    {
+      "tag": "askService",
+      "patterns": [
+        "Bye",
+        "See you later",
+        "Goodbye"
+      ],
+      "responses": [
+        "%s, are you looking to book a train ticket or see potential train delays?",
+        "Would you like to book a train ticket or see potential train delays, %s?",
+        "%s, are you interested in booking train tickets or look at predicted train delays?"
+      ]
+    },
+    {
+      "tag": "destination",
+      "patterns": [
+        "Thanks",
+        "Thank you",
+        "That's helpful",
+        "Thanks a lot!"
+      ],
+      "responses": [
+        "What station are you arriving to?",
+        "What destination are you travelling to?",
+        "What is your final destination?"
+      ]
+    },
+    {
+      "tag": "origin",
+      "patterns": [
+
+      ],
+      "responses": [
+        "What station are you travelling from?",
+        "What is your origin station?",
+        "What station are you leaving from?"
+      ]
+    },
+    {
+      "tag": "return",
+      "patterns": [
+
+      ],
+      "responses": [
+        "Are you looking to have a return journey?",
+        "Is your journey a return journey?",
+        "Are you planning on a return journey?"
+      ]
+    },
+    {
+      "tag": "departDate",
+      "patterns": [
+        "How long does delivery take?",
+        "How long does shipping take?",
+        "When do I get my delivery?"
+      ],
+      "responses": [
+        "What date would you like to leave on?",
+        "What date are you planning to depart on?",
+        "What date would you like to depart on?"
+      ]
+    },
+    {
+      "tag": "departTime",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "What time would you like to leave at?)",
+        "What time are you looking to depart at?",
+        "What is your preferred departure time?"
+      ]
+    },
+    {
+      "tag": "returnDate",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "What would be your preferred return date?",
+        "What date would you like to return on?",
+        "When would you like your return date to be?"
+      ]
+    },
+    {
+      "tag": "returnTime",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "By what time would you want to return?",
+        "What time would you like to return at?"
+      ]
+    },
+    {
+      "tag": "departTime",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "What time would you like to leave at?)",
+        "What time are you looking to depart at?",
+        "What is your preferred departure time?"
+      ]
+    },
+    {
+      "tag": "departTime",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "What time would you like to leave at?)",
+        "What time are you looking to depart at?",
+        "What is your preferred departure time?"
+      ]
+    },
+    {
+      "tag": "departTime",
+      "patterns": [
+        "Tell me a joke!",
+        "Tell me something funny!",
+        "Do you know a joke?"
+      ],
+      "responses": [
+        "What time would you like to leave at?)",
+        "What time are you looking to depart at?",
+        "What is your preferred departure time?"
+      ]
+    }
+
+  ]
+}

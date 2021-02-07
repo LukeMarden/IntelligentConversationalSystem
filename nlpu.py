@@ -65,7 +65,7 @@ def bag_of_words(tokenized_sentence, all_words):
 # object standardization
 
 # speech tagging
-with open('intents.json', 'r') as f:
+with open('intents2.json', 'r') as f:
     intents = json.load(f)
 
 all_words = []
