@@ -26,35 +26,20 @@ if __name__ == '__main__':
     # pred = prediction('Norwich', 'London Liverpool Street', 9, 'Diss', 10, 1200) #check that it contains all these stations
     question = {}
     kb = TrainBooking()
-    kb.knowledge = {'service': 'book'}
+    kb.knowledge = {'service': 'predict'}
     kb.reset()
     kb.run()
-    message = "Ipswich"
-    info = extract_info(kb.knowledge, message, kb)
-    kb.reset()
-    kb.run()
-    print(kb.knowledge['response'])
-    message = "Norwich"
-    info = extract_info(kb.knowledge, message, kb)
-    kb.reset()
-    kb.run()
-    print(kb.knowledge['response'])
-    message = "yes"
-    info = extract_info(kb.knowledge, message, kb)
-    kb.reset()
-    kb.run()
-    print(kb.knowledge['response'])
-    message = "12 March 2021"
-    info = extract_info(kb.knowledge, message, kb)
-    kb.reset()
-    kb.run()
-    print(kb.knowledge['response'])
-    message = "12:00"
-    info = extract_info(kb.knowledge, message, kb)
-    kb.reset()
-    kb.run()
-    print(kb.knowledge['response'])
 
+    kb.knowledge['destination'] = 'Ipswich'
+    kb.knowledge['origin'] = 'Diss'
+    kb.knowledge['delayTime'] = 10*60
+    kb.knowledge['numberOfStops'] = 8
+    kb.knowledge['delayStation'] = 'Norwich'
+    kb.knowledge['delayCode'] = 0
+    kb.knowledge['arrivalTime'] = 1200
+    kb.reset()
+    kb.run()
+    print(kb.knowledge['response'])
 
     # #Discord
     # client.run('Nzk2NzQxOTg0NDQ1NzkyMjc2.X_cVyw.-2yYSLY34sKpL3keAFzEjwAWgdU')

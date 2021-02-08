@@ -134,7 +134,6 @@ class TrainBooking(KnowledgeEngine):
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
           Fact(departDate=MATCH.departDate), NOT(Fact(departTime=W()))))
     def departTime(self):
-        # self.declare(Fact(departTime=1200))
         self.knowledge['question'] = 'departTime'
         self.knowledge['response'] = 'What time would you like to depart? (HH:MM)'
 
@@ -202,7 +201,7 @@ class TrainBooking(KnowledgeEngine):
     @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))
     def predict(self):
-        self.knowledge['response'] = ('The train will be ' + self.service.predict_delay() + ' minutes late')
+        self.knowledge['response'] = ('The train will arrive at: ' + self.service.predict_delay())
 
 
 if __name__ == '__main__':
