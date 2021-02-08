@@ -40,7 +40,9 @@ async def on_message(message):
     elif (message.channel is await message.author.create_dm()):
         channel = message.channel
         if message.author.id in kb:
-            extract_info(kb[message.author.id].knowledge, message.content, kb[message.author.id])
+            info = extract_info(kb[message.author.id].knowledge, message.content, kb[message.author.id])
+            if (info != 1):
+                await channel.send('Invalid response please try again.')
             kb[message.author.id].reset()
             kb[message.author.id].run()
             await channel.send(kb[message.author.id].knowledge['response'])

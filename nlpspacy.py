@@ -106,30 +106,46 @@ def extract_info(question, message, kb):
 
     results['integers'] = integers
 
-    if question['question'] == 'origin':
+    if (question['question'] == 'origin') and ('location' in results):
         kb.knowledge['origin'] = results['location'][0]
-    elif question['question'] == 'destination':
+        results = 1
+    elif (question['question'] == 'destination') and ('location' in results):
         kb.knowledge['destination'] = results['location'][0]
-    elif question['question'] == 'delayStation':
+        results = 1
+    elif (question['question'] == 'delayStation') and ('location' in results):
         kb.knowledge['delayStation'] = results['location'][0]
+        results = 1
 
-    if question['question'] == 'return':
+    if (question['question'] == 'return') and ('return' in results):
         kb.knowledge['return'] = results['return']
+        results = 1
 
-    if question['question'] == 'departDate':
+    if (question['question'] == 'departDate') and ('dates' in results):
         kb.knowledge['departDate'] = results['dates'][0]
-    elif question['question'] == 'returnDate':
+        results = 1
+    elif (question['question'] == 'returnDate') and ('dates' in results):
         kb.knowledge['returnDate'] = results['dates'][0]
-    elif question['question'] == 'departTime':
+        results = 1
+    elif (question['question'] == 'departTime') and ('times' in results):
         kb.knowledge['departTime'] = results['times'][0]
-    elif question['question'] == 'returnTime':
+        results = 1
+    elif (question['question'] == 'returnTime') and ('times' in results):
         kb.knowledge['returnTime'] = results['times'][0]
-    elif question['question'] == 'arrivalTime':
+        results = 1
+    elif (question['question'] == 'arrivalTime') and ('times' in results):
         kb.knowledge['arrivalTime'] = results['times'][0]
+        results = 1
 
-    if question['question'] == 'numberOfStops':
+    if (question['question'] == 'numberOfStops') and ('integers' in results):
         kb.knowledge['numberOfStops'] = results['integers'][0]
-    elif question['question'] == 'delayTime':
+        results = 1
+    elif (question['question'] == 'delayTime') and ('integers' in results):
         kb.knowledge['delayTime'] = results['integers'][0]
-    elif question['question'] == 'delayCode':
+        results = 1
+    elif (question['question'] == 'delayCode') and ('integers' in results):
         kb.knowledge['delayCode'] = results['integers'][0]
+        results = 1
+
+    print(results)
+    return results
+
