@@ -1,6 +1,7 @@
 import discord
 from discord.ext import tasks, commands
 from knowledge_base import TrainBooking
+from nlpspacy import *
 import asyncio
 client = commands.Bot(command_prefix = '!')
 kb = {}
@@ -35,11 +36,13 @@ async def on_message(message):
         channel.send('pong')
     elif (message.channel is await message.author.create_dm()):
         channel = message.channel
-#         process content in nlpu
-#         kb[message.author.id].reset()
-        kb[message.author.id].run()
-        await channel.send(kb[message.author.id].knowledge['response'])
-        print(message.author)
+        if kb[message.author.id] is not {}:
+            extract_info(kb[message.author.id].knowledge, message.content, kb[message.author.id])
+            kb[message.author.id].reset()
+            kb[message.author.id].run()
+            await channel.send(kb[message.author.id].knowledge['response'])
+        else:
+            await channel.send('Can you please go to the main channel and give the bot a command')
 
     elif(message.content == '!book'):
         channel = await message.author.create_dm()
@@ -47,14 +50,14 @@ async def on_message(message):
         kb[message.author.id].knowledge = {'service':'book'}
         kb[message.author.id].reset()
         kb[message.author.id].run()
-        await channel.send('Hello, how can I help you?')
+        await channel.send(kb[message.author.id].knowledge['response'])
     elif(message.content == '!predict'):
         channel = await message.author.create_dm()
         kb[message.author.id] = TrainBooking()
         kb[message.author.id].knowledge = {'service': 'predict'}
         kb[message.author.id].reset()
         kb[message.author.id].run()
-        await channel.send('Hello, how can I help you?')
+        await channel.send(kb[message.author.id].knowledge['response'])
     else:
         print(message.content)
 

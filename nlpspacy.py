@@ -4,6 +4,7 @@ import re
 import dateutil
 import spacy
 from spacy.lang.en import English as english
+from knowledge_base import *
 
 parser = english()
 nlp = spacy.load("en_core_web_lg")
@@ -13,7 +14,7 @@ nlp = spacy.load("en_core_web_lg")
 #     print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
 #           token.shape_, token.is_alpha, token.is_stop)
 
-def extract_info(question, message):
+def extract_info(question, message, kb):
     doc = nlp(message)
     stations = json.load(open('train_codes.json'))
     results = {}
@@ -106,39 +107,51 @@ def extract_info(question, message):
 
     if question['question'] == 'origin':
         print("origin")
-        # kb['origin'] == results['location']
+        kb.knowledge['origin'] = results['location'][0]
     elif question['question'] == 'destination':
         print("destination")
-        # kb['destination'] == results['location']
+        kb.knowledge['destination'] = results['location'][0]
     elif question['question'] == 'delayStation':
         print("delayStation")
+        kb.knowledge['delayStation'] = results['location'][0]
 
     if question['question'] == 'return':
         print("return")
-        # kb['isReturn'] == results['return']
+        kb.knowledge['return'] = results['return']
 
     if question['question'] == 'departDate':
         print("departDate")
+        kb.knowledge['departDate'] = results['date']
         # kb['departDate'] = results['date']
     elif question['question'] == 'returnDate':
         print("returnDate")
+        kb.knowledge['returnDate'] = results['date']
         # kb['returnDate'] == results['date']
     elif question['question'] == 'departTime':
         print("depart Time")
+        kb.knowledge['returnDate'] = results['time']
         # kb['departTime'] = results['time']
     elif question['question'] == 'returnTime':
         print("return Time")
+        kb.knowledge['returnTime'] = results['time']
         # kb['returnTime'] = results['time']
     elif question['question'] == 'arrivalTime':
         print("arrivalTime")
+        kb.knowledge['arrivalTime'] = results['time']
+
         # kb['arrivalTime'] = results['time']
 
     if question['question'] == 'numberOfStops':
-        print("numOfStops")
-        # kb['numberOfStops'] = results['number']
+        print("numberOfStops")
+        kb.knowledge['numberOfStops'] = results['integer']
+
+        # kb['numberOfStops'] = results['integer']
     elif question['question'] == 'delayTime':
         print("delayTime")
-        # kb['delayTime'] = results['time']
+        kb.knowledge['delayTime'] = results['integer']
+        # kb['delayTime'] = results['integer']
     elif question['question'] == 'delayCode':
         print("delayCode")
-        # kb['delayCode'] = results['time']
+        kb.knowledge['delayCode'] = results['integer']
+
+        # kb['delayCode'] = results['integer']
