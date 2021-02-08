@@ -76,9 +76,9 @@ class TrainBooking(KnowledgeEngine):
         if 'origin' in self.knowledge:
             self.declare(Fact(origin=self.knowledge['origin']))
             self.service.origin = self.knowledge['origin']
-        if 'isReturn' in self.knowledge:
-            self.declare(Fact(isReturn=self.knowledge['isReturn']))
-            self.service.isReturn = self.knowledge['isReturn']
+        if 'return' in self.knowledge:
+            self.declare(Fact(isReturn=self.knowledge['return']))
+            self.service.isReturn = self.knowledge['return']
         if 'departDate' in self.knowledge:
             self.declare(Fact(departDate=self.knowledge['departDate']))
             self.service.departDate = self.knowledge['departDate']
