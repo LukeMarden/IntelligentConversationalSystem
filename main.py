@@ -7,7 +7,7 @@ from prediction import *
 # from discord.ext import commands
 
 if __name__ == '__main__':
-    print()
+    print('testing')
     # #KB
     # engine = TrainBooking()
     # engine.knowledge = {}

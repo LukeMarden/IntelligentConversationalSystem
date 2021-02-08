@@ -70,44 +70,6 @@ class TrainBooking(KnowledgeEngine):
             yield Fact(action='predict')
             print('predict')
 
-    # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
-    #     # def ask_name(self):
-    #     #     self.declare(Fact(name=input("What's your name? ")))
-    #     #
-    #     # @Rule(Fact(action='greet'), NOT(Fact(location=W())))
-    #     # def ask_location(self): self.declare(Fact(location=input("Where are you? ")))
-    #     #
-    #     # @Rule(Fact(action='greet'), Fact(name=MATCH.name),
-    #     #       Fact(location=MATCH.location))
-    #     # def greet(self, name, location):
-    #     #     print("Hi %s! How is the weather in %s?" % (name, location))
-
-    # @Rule(Fact(action='greet'), NOT(Fact(name=W())))
-    # def name(self):
-    #     print("test")
-    #     if self.service.name is not None:
-    #         self.declare(Fact(name = self.service.name))
-    #         self.knowledge['name'] = self.service.name
-    #     else:
-    #         if self.knowledge['question'] == 'askName':
-    #             return 'ask name'
-    #             # Message.emit_feedback('display received message', 'unknown_message')
-    #         else:
-    #             self.knowledge['question'] = 'askName'
-    #             return 'ask name'
-    #             # Message.emit_feedback('display received message', 'ask_name')
-
-    # @Rule(Fact(action='greet'), Fact(name = MATCH.name))
-    # def service(self):
-    #     print("TEST")
-    #     if self.knowledge['question'] == 'askService':
-    #         print("AskService1")
-    #         # Message.emit_feedback('display received message', 'unknown_message')
-    #     else:
-    #         self.knowledge['question'] = 'askService'
-    #         print("AskService2")
-    #         # Message.emit_feedback('display received message', 'ask_booking')
-
     @Rule(NOT(Fact(destination=W())), NOT(Fact(origin=W())))
     def destination(self):
         if self.service.destination is not None:
@@ -277,38 +239,7 @@ class TrainBooking(KnowledgeEngine):
             print()
 
 
-class Greetings(KnowledgeEngine):
-    @DefFacts()
-    def _initial_action(self):
-        self.knowledge['question'] = None
-        self.service = None
-        if self.knowledge['service'] == 'book':
-            self.service = Ticket()
-            yield Fact(action="book")
-            print('book')
-        elif self.knowledge['service'] == 'predict':
-            self.service = Delay()
-            yield Fact(action='predict')
-            print('predict')
-
-    @Rule(Fact(action='book'), NOT(Fact(name=W())))
-    def ask_name(self):
-        print('test')
-
-    @Rule(Fact(action='greet'), NOT(Fact(location=W())))
-    def ask_location(self):
-        self.declare(Fact(location=input("Where are you? ")))
-
-    @Rule(Fact(action='greet'), Fact(name=MATCH.name), Fact(location=MATCH.location))
-    def greet(self, name, location):
-        print("Hi %s! How is the weather in %s?" % (name, location))
-
-
 if __name__ == '__main__':
-    # engine = TrainBooking()
-    # engine.knowledge = {'service':'book'}
-    # engine.reset()  # Prepare the engine for the execution.
-    # engine.run() # Run it!
 
     engine = TrainBooking()
     engine.knowledge = {'service': 'book'}
