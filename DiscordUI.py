@@ -36,7 +36,7 @@ async def on_message(message):
         channel.send('pong')
     elif (message.channel is await message.author.create_dm()):
         channel = message.channel
-        if kb[message.author.id] is not {}:
+        if message.author.id in kb:
             extract_info(kb[message.author.id].knowledge, message.content, kb[message.author.id])
             kb[message.author.id].reset()
             kb[message.author.id].run()
