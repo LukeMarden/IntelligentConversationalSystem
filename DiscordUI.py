@@ -19,6 +19,7 @@ async def on_member_join(member):
     await channel.send(f'Welcome {member}! How can I help?')
     await channel.send('Type \'!book\' to begin the booking process')
     await channel.send('Type \'!predict\' to begin the prediction process')
+    await channel.send('Type \'!help\' for help')
 
 @client.event
 async def on_member_remove(member):
@@ -60,6 +61,9 @@ async def on_message(message):
         kb[message.author.id].reset()
         kb[message.author.id].run()
         await channel.send(kb[message.author.id].knowledge['response'])
+    elif (message.content == '!help'):
+        await channel.send('Type \'!book\' to begin the booking process')
+        await channel.send('Type \'!predict\' to begin the prediction process')
     else:
         print(message.content)
 
