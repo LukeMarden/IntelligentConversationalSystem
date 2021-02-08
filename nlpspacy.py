@@ -32,17 +32,17 @@ def extract_info(question, message, kb):
         x = re.search(true, ent)
         y = re.search(false, ent)
         if ent in {'return', 'returns'}:
-            results['return'] = 'true'
+            results['return'] = True
         if 'come back' in str(doc):
-            results['return'] = 'true'
+            results['return'] = True
         if 'go back' in str(doc):
-            results['return'] = 'true'
+            results['return'] = True
         if x:
-            results['return'] = 'true'
+            results['return'] = True
         if ent in {'single', 'singles'}:
-            results['return'] = 'false'
+            results['return'] = False
         if y:
-            results['return'] = 'false'
+            results['return'] = False
 
     # Extract locations
     locations = []
@@ -103,55 +103,30 @@ def extract_info(question, message, kb):
 
     results['integers'] = integers
 
-    print(results)
-
     if question['question'] == 'origin':
-        print("origin")
         kb.knowledge['origin'] = results['location'][0]
     elif question['question'] == 'destination':
-        print("destination")
         kb.knowledge['destination'] = results['location'][0]
     elif question['question'] == 'delayStation':
-        print("delayStation")
         kb.knowledge['delayStation'] = results['location'][0]
 
     if question['question'] == 'return':
-        print("return")
         kb.knowledge['return'] = results['return']
 
     if question['question'] == 'departDate':
-        print("departDate")
-        kb.knowledge['departDate'] = results['date']
-        # kb['departDate'] = results['date']
+        kb.knowledge['departDate'] = results['dates'][0]
     elif question['question'] == 'returnDate':
-        print("returnDate")
-        kb.knowledge['returnDate'] = results['date']
-        # kb['returnDate'] == results['date']
+        kb.knowledge['returnDate'] = results['dates'][0]
     elif question['question'] == 'departTime':
-        print("depart Time")
-        kb.knowledge['returnDate'] = results['time']
-        # kb['departTime'] = results['time']
+        kb.knowledge['departTime'] = results['times'][0]
     elif question['question'] == 'returnTime':
-        print("return Time")
-        kb.knowledge['returnTime'] = results['time']
-        # kb['returnTime'] = results['time']
+        kb.knowledge['returnTime'] = results['times'][0]
     elif question['question'] == 'arrivalTime':
-        print("arrivalTime")
-        kb.knowledge['arrivalTime'] = results['time']
-
-        # kb['arrivalTime'] = results['time']
+        kb.knowledge['arrivalTime'] = results['times'][0]
 
     if question['question'] == 'numberOfStops':
-        print("numberOfStops")
-        kb.knowledge['numberOfStops'] = results['integer']
-
-        # kb['numberOfStops'] = results['integer']
+        kb.knowledge['numberOfStops'] = results['integers'][0]
     elif question['question'] == 'delayTime':
-        print("delayTime")
-        kb.knowledge['delayTime'] = results['integer']
-        # kb['delayTime'] = results['integer']
+        kb.knowledge['delayTime'] = results['integers'][0]
     elif question['question'] == 'delayCode':
-        print("delayCode")
-        kb.knowledge['delayCode'] = results['integer']
-
-        # kb['delayCode'] = results['integer']
+        kb.knowledge['delayCode'] = results['integers'][0]

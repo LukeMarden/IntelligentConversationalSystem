@@ -21,7 +21,6 @@ class prediction():
         self.data = self.load_data(station1, station2)
         # self.data = pd.read_pickle('database.pkl')
         self.journey = self.find_journey(numberOfStops, delayStation, delay, delayCode)
-        # self.predictionModel = self.accurate_predict_model()
         self.predictionModel = self.practical_predict_model()
         self.time = self.predict_journey(arrivalTime, station2)
 

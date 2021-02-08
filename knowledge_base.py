@@ -22,9 +22,9 @@ class Ticket(Fact):
         url = 'https://ojp.nationalrail.co.uk/service/timesandfares/'
         url += self.find_location_code(self.origin) + '/'
         url += self.find_location_code(self.destination) + '/'
-        url += self.departDate + '/' + self.departTime + '/dep/'
+        url += str(self.departDate) + '/' + str(self.departTime) + '/dep/'
         if (self.isReturn is True):
-            url += self.returnDate + '/' + self.returnTime + '/dep/'
+            url += str(self.returnDate) + '/' + str(self.returnTime) + '/dep/'
             print(url)
         return url
 
@@ -64,11 +64,9 @@ class TrainBooking(KnowledgeEngine):
         if self.knowledge['service'] == 'book':
             self.service = Ticket()
             yield Fact(action="book")
-            print('book')
         elif self.knowledge['service'] == 'predict':
             self.service = Delay()
             yield Fact(action='predict')
-            print('predict')
 
         if 'destination' in self.knowledge:
             self.declare(Fact(destination=self.knowledge['destination']))
@@ -83,8 +81,10 @@ class TrainBooking(KnowledgeEngine):
             self.declare(Fact(departDate=self.knowledge['departDate']))
             self.service.departDate = self.knowledge['departDate']
         if 'departTime' in self.knowledge:
+            print('Hello')
             self.declare(Fact(departTime=self.knowledge['departTime']))
             self.service.departTime = self.knowledge['departTime']
+            print(self.service.departTime)
         if 'returnDate' in self.knowledge:
             self.declare(Fact(returnDate=self.knowledge['returnDate']))
             self.service.returnDate = self.knowledge['returnDate']
@@ -107,35 +107,36 @@ class TrainBooking(KnowledgeEngine):
             self.declare(Fact(arrivalTime=self.knowledge['arrivalTime']))
             self.service.arrivalTime = self.knowledge['arrivalTime']
 
-    @Rule(NOT(Fact(destination=W())), NOT(Fact(origin=W())))
+    @Rule(AND(NOT(Fact(destination=W())), NOT(Fact(origin=W()))))
     def destination(self):
         self.knowledge['question'] = 'destination'
         self.knowledge['response'] = 'Can I get your destination please?'
 
-    @Rule(Fact(destination=MATCH.destination), NOT(Fact(origin=W())))
+    @Rule(AND(Fact(destination=MATCH.destination), NOT(Fact(origin=W()))))
     def origin(self):
         self.knowledge['question'] = 'origin'
         self.knowledge['response'] = 'Can I get your origin please?'
 
-    @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
-          Fact(origin=MATCH.origin), NOT(Fact(isReturn=W())))
+    @Rule(AND(Fact(action='book'), Fact(destination=MATCH.destination),
+          Fact(origin=MATCH.origin), NOT(Fact(isReturn=W()))))
     def isReturn(self):
         self.knowledge['question'] = 'return'
         self.knowledge['response'] = 'Would you like a return ticket?'
 
-    @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
+    @Rule(AND(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
-          NOT(Fact(departDate=W())), NOT(Fact(departTime=W())))
+          NOT(Fact(departDate=W())), NOT(Fact(departTime=W()))))
     def departDate(self):
         self.knowledge['question'] = 'departDate'
-        self.knowledge['response'] = 'What date you like to depart?'
+        self.knowledge['response'] = 'What date would you like to depart? (DD Month YYYY)'
 
-    @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
+    @Rule(AND(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=MATCH.isReturn),
-          Fact(departDate=MATCH.departDate), NOT(Fact(departTime=W())))
+          Fact(departDate=MATCH.departDate), NOT(Fact(departTime=W()))))
     def departTime(self):
+        # self.declare(Fact(departTime=1200))
         self.knowledge['question'] = 'departTime'
-        self.knowledge['response'] = 'What time would you like to depart?'
+        self.knowledge['response'] = 'What time would you like to depart? (HH:MM)'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -143,7 +144,7 @@ class TrainBooking(KnowledgeEngine):
           NOT(Fact(returnDate=W())), NOT(Fact(returnTime=W())))
     def returnDate(self):
         self.knowledge['question'] = 'returnDate'
-        self.knowledge['response'] = 'What date would you like to return?'
+        self.knowledge['response'] = 'What date would you like to return? (DD Month YYYY)'
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -151,14 +152,15 @@ class TrainBooking(KnowledgeEngine):
           Fact(returnDate=MATCH.returnDate), NOT(Fact(returnTime=W())))
     def returnTime(self):
         self.knowledge['question'] = 'returnTime'
-        self.knowledge['response'] = 'What time would you like to return?'
+        self.knowledge['response'] = 'What time would you like to return? (HH:MM)'
 
-    @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
+    @Rule(AND(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=False),
-          Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime))
+          Fact(departDate=MATCH.departDate), Fact(departTime=MATCH.departTime)))
     def singleTicket(self):
         self.knowledge['question'] = 'singleTicket'
-        self.knowledge['response'] = self.service.find_cheapest()
+        self.knowledge['response'] = ('The cheapest ticket is: ' + self.service.find_cheapest() +
+                                      ', at link: ' + self.service.generate_ticket_url())
 
     @Rule(Fact(action='book'), Fact(destination=MATCH.destination),
           Fact(origin=MATCH.origin), Fact(isReturn=True),
@@ -166,40 +168,41 @@ class TrainBooking(KnowledgeEngine):
           Fact(returnDate=MATCH.returnDate), Fact(returnTime=MATCH.returnTime))
     def returnTicket(self):
         self.knowledge['question'] = 'returnTicket'
-        self.knowledge['response'] = self.service.find_cheapest()
+        self.knowledge['response'] = ('The cheapest ticket is: ' + self.service.find_cheapest() +
+                                      ', at link: ' + self.service.generate_ticket_url())
 
     @Rule(Fact(action='predict'), NOT(Fact(delayTime=W())))
     def askDelay(self):
         self.knowledge['question'] = 'delayTime'
-        self.knowledge['response'] = 'How long has the train been delayed?'
+        self.knowledge['response'] = 'How long has the train been delayed? (Minutes)'
 
-    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), NOT(Fact(numberOfStops=W())))
+    @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), NOT(Fact(numberOfStops=W())))
     def askNumberOfStops(self):
         self.knowledge['question'] = 'numberOfStops'
         self.knowledge['response'] = 'How many stops are there on the overall journey?'
 
-    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+    @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           NOT(Fact(delayStation=W())))
     def askDelayStation(self):
         self.knowledge['question'] = 'delayStation'
         self.knowledge['response'] = 'Which station has the delay been announced from?'
 
-    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+    @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), NOT(Fact(arrivalTime=W())))
     def askArrivalTime(self):
         self.knowledge['question'] = 'arrivalTime'
         self.knowledge['response'] = 'What time were you supposed to arrive at your destination?'
 
-    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+    @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), NOT(Fact(delayCode=W())))
     def askDelayCode(self):
         self.knowledge['question'] = 'delayCode'
         self.knowledge['response'] = 'Do you know your delay code? If not type 0'
 
-    @Rule(Fact(action='predict'), Fact(delay=MATCH.delayTime), Fact(delay=MATCH.numberOfStops),
+    @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))
     def predict(self):
-        self.knowledge['response'] = ('The train will be ', self.service.predict_delay(), ' minutes late')
+        self.knowledge['response'] = ('The train will be ' + self.service.predict_delay() + ' minutes late')
 
 
 if __name__ == '__main__':
