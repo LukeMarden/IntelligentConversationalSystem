@@ -1,8 +1,9 @@
 from knowledge_base import *
+from nlpspacy import extract_info
 from prediction import *
 # from DiscrodBotPython.DiscordBot import *
 # from web_scraper import *
-# from nlpu import *
+# from nlpuspacy import *
 # from discord.ext import commands
 
 if __name__ == '__main__':
@@ -22,7 +23,12 @@ if __name__ == '__main__':
     # ticket.returnDate = '020221'
     # ticket.returnTime = '0000'
     # print(ticket.find_cheapest())
-    pred = prediction('Norwich', 'London Liverpool Street', 9, 'Diss', 10, 1200) #check that it contains all these stations
+    # pred = prediction('Norwich', 'London Liverpool Street', 9, 'Diss', 10, 1200) #check that it contains all these stations
+    question = {}
+    question['question'] = 'delayCode'
+    message = "55 minutes"
+    info = extract_info(question, message)
+    print(info)
 
 
     # #Discord

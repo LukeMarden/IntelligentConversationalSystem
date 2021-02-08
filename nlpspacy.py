@@ -1,155 +1,144 @@
+import json
 import re
-from pprint import pprint
+
+import dateutil
+import spacy
 from spacy.lang.en import English as english
 
-from spacy.matcher import Matcher
-import json
-import dateutil.parser
-import spacy
-
 parser = english()
+nlp = spacy.load("en_core_web_lg")
 
-# from DiscordUI import on_message
-
-# sentence detection, tokenizer, POS model
-
-# categorize --> regex
-# greet = re.compile(r'\b(?i)(hello|hey|hi|yo)\b')
-
-# true = re.compile(r'\b(?i)(true|yes|yeah|yh|ya)\b')
-# time = re.compile(r'^(([01]\d|2[0-3]):([0-5]\d)|24:00)$')
-
-nlp = spacy.load("en_core_web_md")
-ner = nlp.get_pipe('ner')
-
-# message = nlp(text)
-
-doc = nlp(
-    "Hello Harry Apple is looking at buying U.K. on the 4 of September 2015 startup Acle for $1 billion at on the "
-    "31/01/2021 "
-    "from "
-    "Anderston correct Bagshot return 25/05/2021 in 55 minutes. It will take about 5 stops")
-# doc = MESSAGE
-pprint([(X.text, X.label_) for X in doc.ents])
-
-results = {}
 
 # for token in doc:
 #     print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
 #           token.shape_, token.is_alpha, token.is_stop)
 
+def extract_info(question, message):
+    doc = nlp(message)
+    stations = json.load(open('train_codes.json'))
+    results = {}
+    # print(doc)
+    # true = re.compile(r'\b(?i)(true|yes|yeah|yh|correct)\b')
+    true = r'.*(yes|correct|true|yeah|yh).*'
+    false = r'.*(no|wrong|false|nah|nay).*'
+    # time = r'^([0-1][0-9]|[2][0-3]):([0-5][0-9])$'
+    time = re.compile(r'^(([01]\d|2[0-3]):([0-5]\d)|24:00)$')
+    timeAM = r'/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/'
 
-# if greet.search(str(doc)):
-#     results['greet'] = 'true'
-#
-# print(results)
+    # Extract return
+    for ent in doc:
+        ent = str(ent).lower()
+        x = re.search(true, ent)
+        y = re.search(false, ent)
+        if ent in {'return', 'returns'}:
+            results['return'] = 'true'
+        if 'come back' in str(doc):
+            results['return'] = 'true'
+        if 'go back' in str(doc):
+            results['return'] = 'true'
+        if x:
+            results['return'] = 'true'
+        if ent in {'single', 'singles'}:
+            results['return'] = 'false'
+        if y:
+            results['return'] = 'false'
 
-# Trying regex method search...
-greeting = r'.*(hi|hello|yo|hey|).*'
+    # Extract locations
+    locations = []
+    for ent in doc.ents:
+        if ent.label_ == 'GPE':
+            locations.append(str(ent[0]))
+            results['location'] = locations
+        else:
+            for i in stations:
+                # print(ent.text)
+                if ent.text == i:
+                    locations.append(i)
+                    results['location'] = locations
 
+    # minutes = []
+    # times = []
+    # for ent in doc.ents:
+    #     print(ent.label_)
+    #     if ent.text.isdigit():
+    #         minutes.append(ent.text)
+    #
+    # if len(minutes) > 0:
+    #     results['minutes'] = minutes
 
-# greeting
-def greet(txt):
-    x = re.search(greeting, txt.text)
-    if x:
-        results['greet'] = 'true'
-    else:
-        results['greet'] = 'false'
+    minutes = []
+    dates = []
+    times = []
+    integers = []
+    for ent in doc.ents:
+        if ent.label_ == 'CARDINAL':
+            integers.append(ent.text)
+            continue
+        # Minutes
+        if ent.text.isdigit():
+            minutes.append(ent.text)
 
+        # Dates
+        if ent.label_ == 'DATE':
+            date = dateutil.parser.parse(ent.text)
+            date = str(date.day).zfill(2) + str(date.month).zfill(2) + (str(date.year)[2:])
+            dates.append(date)
 
-greet(doc)
+        # Times
+        if ent.label_ == 'TIME':
+            date = dateutil.parser.parse(ent.text)
+            times.append(str(date.hour).zfill(2) + str(date.minute).zfill(2))
 
-# responses
-true = r'.*(yes|correct|true).*'
+    if time.search(str(message)):
+        date = dateutil.parser.parse(str(message))
+        times.append(str(date.hour).zfill(2) + str(date.minute).zfill(2))
 
+    if len(minutes) > 0:
+        results['minutes'] = minutes
+    if len(dates) > 0:
+        results['dates'] = dates
+    if len(times) > 0:
+        results['times'] = times
 
-def trueAnswer(txt):
-    x = re.search(true, txt.text)
-    if x:
-        results['answer'] = 'true'
+    results['integers'] = integers
 
+    print(results)
 
-trueAnswer(doc)
+    if question['question'] == 'origin':
+        print("origin")
+        # kb['origin'] == results['location']
+    elif question['question'] == 'destination':
+        print("destination")
+        # kb['destination'] == results['location']
+    elif question['question'] == 'delayStation':
+        print("delayStation")
 
-false = r'.*(no|wrong|false).*'
+    if question['question'] == 'return':
+        print("return")
+        # kb['isReturn'] == results['return']
 
+    if question['question'] == 'departDate':
+        print("departDate")
+        # kb['departDate'] = results['date']
+    elif question['question'] == 'returnDate':
+        print("returnDate")
+        # kb['returnDate'] == results['date']
+    elif question['question'] == 'departTime':
+        print("depart Time")
+        # kb['departTime'] = results['time']
+    elif question['question'] == 'returnTime':
+        print("return Time")
+        # kb['returnTime'] = results['time']
+    elif question['question'] == 'arrivalTime':
+        print("arrivalTime")
+        # kb['arrivalTime'] = results['time']
 
-def falseAnswer(txt):
-    x = re.search(false, txt.text)
-    if x:
-        results['answer'] = 'false'
-
-
-stations = json.load(open('train_codes.json'))
-
-# for i in stations:
-#     print(i)
-
-# Locations
-locations = []
-
-for entity in doc.ents:
-    if entity.label_ == 'GPE':
-        locations.append(str(entity[0]))
-        results['location'] = locations
-    else:
-        for i in stations:
-            if entity.text == i:
-                locations.append(i)
-                results['location'] = locations
-
-
-# Time
-
-
-extracted_entities = [(i.text, i.label_) for i in doc.ents]
-
-relevant_labels = ["DATE", "CARDINAL"]
-
-for relevant_label in relevant_labels:
-    print("Extracted for label: " + relevant_label)
-    for entity, label in extracted_entities:
-        if label == relevant_label:
-            print("- " + entity)
-
-# time = re.compile(r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)('
-#                   r'?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{'
-#                   r'2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|('
-#                   r'?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|('
-#                   r'?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{'
-#                   r'2}|24:00)$')
-# minutes = []
-# dates = []
-# times = []
-# for entity in doc.ents:
-#     if entity.text.isdigit():
-#         minutes.append(entity.text)
-#         results['minutes'] = minutes
-#
-#     if entity.label_ == 'DATE':
-#         date = dateutil.parser.parse(entity.text)
-#         date = str(date.day).zfill(2) + str(date.month).zfill(2) + (str(date.year)[2:])
-#         dates.append(date)
-#         results['dates'] = dates
-#     #
-#
-#     if entity.label_ == 'TIME':
-#         date = dateutil.parser.parse(entity.text)
-#         times.append(str(date.hour).zfill(2) + str(date.minute).zfill(2))
-#
-#
-# if len(times) > 0:
-#     results['times'] = times
-#
-# print(minutes)
-
-for token in doc:
-    token = str(token).lower()
-
-    if token in {'return', 'returns'}:
-        results['return'] = 'true'
-
-    if 'come back' in str(doc):
-        results['return'] = 'true'
-
-print(results)
+    if question['question'] == 'numberOfStops':
+        print("numOfStops")
+        # kb['numberOfStops'] = results['number']
+    elif question['question'] == 'delayTime':
+        print("delayTime")
+        # kb['delayTime'] = results['time']
+    elif question['question'] == 'delayCode':
+        print("delayCode")
+        # kb['delayCode'] = results['time']
