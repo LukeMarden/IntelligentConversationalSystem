@@ -1,0 +1,9 @@
+,location,late_canc_reason,arrivalDelay,departureDelay,previousArrivalDelay,previousDepartureDelay,nextArrivalDelay,nextDepartureDelay,numberOfStops
+0,NRW,0,0,600,0,0,0,0,8
+1,DIS,0,0,0,0,0,0,0,8
+2,SMK,0,0,0,0,0,0,0,8
+3,IPS,0,0,0,0,0,0,0,8
+4,MNG,0,0,0,0,0,0,0,8
+5,COL,0,0,0,0,0,0,0,8
+6,SRA,0,0,0,0,0,0,0,8
+7,LST,0,0,0,0,0,0,0,8

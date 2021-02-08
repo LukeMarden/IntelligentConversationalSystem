@@ -17,6 +17,8 @@ async def on_ready():
 async def on_member_join(member):
     channel = client.get_channel(796742949223530519)
     await channel.send(f'Welcome {member}! How can I help?')
+    await channel.send('Type \'!book\' to begin the booking process')
+    await channel.send('Type \'!predict\' to begin the prediction process')
 
 @client.event
 async def on_member_remove(member):

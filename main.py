@@ -24,6 +24,8 @@ if __name__ == '__main__':
     # ticket.returnTime = '0000'
     # print(ticket.find_cheapest())
     # pred = prediction('Norwich', 'London Liverpool Street', 9, 'Diss', 10, 1200) #check that it contains all these stations
+
+
     question = {}
     kb = TrainBooking()
     kb.knowledge = {'service': 'predict'}
@@ -32,10 +34,10 @@ if __name__ == '__main__':
 
     kb.knowledge['destination'] = 'Ipswich'
     kb.knowledge['origin'] = 'Diss'
-    kb.knowledge['delayTime'] = 10*60
+    kb.knowledge['delayTime'] = 5
     kb.knowledge['numberOfStops'] = 8
     kb.knowledge['delayStation'] = 'Norwich'
-    kb.knowledge['delayCode'] = 0
+    kb.knowledge['delayCode'] = 10
     kb.knowledge['arrivalTime'] = 1200
     kb.reset()
     kb.run()

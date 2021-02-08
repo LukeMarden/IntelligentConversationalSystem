@@ -49,7 +49,9 @@ class Delay(Fact):
         self.delayCode = None
 
     def predict_delay(self):
-        self.delayPrediction = prediction(self.origin, self.destination, self.numberOfStops,
+        print(self.origin, self.destination,
+              self.delayTime, self.numberOfStops, self.delayStation, self.arrivalTime, self.delayCode)
+        self.delayPrediction = prediction(self.origin, self.destination, int(self.numberOfStops),
                                           self.delayStation, self.delayTime, self.arrivalTime)
         return self.delayPrediction.time
 
@@ -81,10 +83,8 @@ class TrainBooking(KnowledgeEngine):
             self.declare(Fact(departDate=self.knowledge['departDate']))
             self.service.departDate = self.knowledge['departDate']
         if 'departTime' in self.knowledge:
-            print('Hello')
             self.declare(Fact(departTime=self.knowledge['departTime']))
             self.service.departTime = self.knowledge['departTime']
-            print(self.service.departTime)
         if 'returnDate' in self.knowledge:
             self.declare(Fact(returnDate=self.knowledge['returnDate']))
             self.service.returnDate = self.knowledge['returnDate']
@@ -93,7 +93,7 @@ class TrainBooking(KnowledgeEngine):
             self.service.returnTime = self.knowledge['returnTime']
         if 'delayTime' in self.knowledge:
             self.declare(Fact(delayTime=self.knowledge['delayTime']))
-            self.service.delayTime = self.knowledge['delayTime']*60
+            self.service.delayTime = int(self.knowledge['delayTime'])*60
         if 'numberOfStops' in self.knowledge:
             self.declare(Fact(numberOfStops=self.knowledge['numberOfStops']))
             self.service.numberOfStops = self.knowledge['numberOfStops']
@@ -190,13 +190,14 @@ class TrainBooking(KnowledgeEngine):
           Fact(delayStation=MATCH.delayStation), NOT(Fact(arrivalTime=W())))
     def askArrivalTime(self):
         self.knowledge['question'] = 'arrivalTime'
-        self.knowledge['response'] = 'What time were you supposed to arrive at your destination?'
+        self.knowledge['response'] = 'What time were you supposed to arrive at your destination? (HH:MM)'
 
     @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), NOT(Fact(delayCode=W())))
     def askDelayCode(self):
         self.knowledge['question'] = 'delayCode'
-        self.knowledge['response'] = 'Do you know your delay code? If not type 0'
+        self.knowledge['response'] = 'Do you know your delay code? If not type 0. ' \
+                                     'This next part will take upto a minute so please be patient'
 
     @Rule(Fact(action='predict'), Fact(delayTime=MATCH.delayTime), Fact(numberOfStops=MATCH.numberOfStops),
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))

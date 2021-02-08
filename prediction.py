@@ -107,7 +107,8 @@ class prediction():
         self.journeyData = self.journeyData.assign(nextDepartureDelay=0)
         self.journeyData = self.journeyData.assign(late_canc_reason=delayCode)
         self.journeyData.loc[self.journeyData['location'] == self.find_location_code(delayStation),
-                             'departureDelay'] = delay*60
+                             'departureDelay'] = delay
+        self.journeyData.to_csv('journey.csv')
 
     def accurate_predict_model(self):
         # self.data = pd.get_dummies(self.data, columns=['location'])

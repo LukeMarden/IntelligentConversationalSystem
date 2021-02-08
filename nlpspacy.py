@@ -46,11 +46,11 @@ def extract_info(question, message, kb):
 
     # Extract locations
     locations = []
-    for ent in doc.ents:
-        if ent.label_ == 'GPE':
-            locations.append(str(ent[0]))
-            results['location'] = locations
-        else:
+    for ent in doc:
+        # if ent.label_ == 'GPE':
+        #     locations.append(str(ent[0]))
+        #     results['location'] = locations
+        # else:
             for i in stations:
                 # print(ent.text)
                 if ent.text == i:
@@ -71,6 +71,9 @@ def extract_info(question, message, kb):
     dates = []
     times = []
     integers = []
+    for ent in doc:
+        if ent.text == '0':
+            integers.append(ent.text)
     for ent in doc.ents:
         if ent.label_ == 'CARDINAL':
             integers.append(ent.text)
