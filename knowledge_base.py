@@ -2,14 +2,30 @@ from experta import *
 from webscrape3 import *
 from prediction import *
 import json
-from random import choice
 
-
-# from experta.watchers import RULES, AGENDA
-
+# ************************************************************************************************************
+#
+#
+#    Ticket
+# This class is used to handle the users ticket data and find the cheapest ticket
+#
+#
+#    By: Group 18
+#
+#    Created: 03/01/2021
+#
+# ************************************************************************************************************
 class Ticket(Fact):
+
+    # This method is used to initialise the classes variables
+    # destination: The destination
+    # origin: The origin
+    # isReturn: Whether the ticket will be a return or not
+    # departTime: The departure time
+    # departDate: The departure date
+    # returnTime: The return time
+    # returnDate: The return date
     def __init__(self):
-        # self.name = None
         self.isReturn = None
         self.origin = None
         self.destination = None
@@ -18,6 +34,8 @@ class Ticket(Fact):
         self.returnTime = None
         self.returnDate = None
 
+    # This method generates the url for the ticket based on the tickets attributes
+    # return: The tickets url
     def generate_ticket_url(self):
         url = 'https://ojp.nationalrail.co.uk/service/timesandfares/'
         url += self.find_location_code(self.origin) + '/'
@@ -25,20 +43,44 @@ class Ticket(Fact):
         url += str(self.departDate) + '/' + str(self.departTime) + '/dep/'
         if (self.isReturn is True):
             url += str(self.returnDate) + '/' + str(self.returnTime) + '/dep/'
-            print(url)
         return url
 
+    # This method finds the three letter code assosciated with a train station
+    # station: The station to find the three letter code of
+    # return: The three letter code
     def find_location_code(self, station):
         stations = json.load(open('train_codes.json', 'r'))
         return stations[station]
 
+    # This calls webscrape to find the cheapest ticket
+    # return: The cheapest ticket price
     def find_cheapest(self):
         cheapestTicket = CheapestTicket(self.generate_ticket_url(), self.isReturn)
         cheapest = cheapestTicket.find_cheapest_ticket()
         return cheapest
 
-
+# ************************************************************************************************************
+#
+#
+#    Delay
+# This class is used to handle the users ticket data and find the cheapest ticket
+#
+#
+#    By: Group 18
+#
+#    Created: 03/01/2021
+#
+# ************************************************************************************************************
 class Delay(Fact):
+
+    # This method is used to initialise the classes variables
+    # destination: The destination
+    # origin: The origin
+    # numberOfStops: The number of stops for the whole journey
+    # delayStation: The station the delay occurred at
+    # delay: the delay in seconds
+    # arrivalTime: The proposed arrival time at the destination
+    # delayCode: The delay reason code
     def __init__(self):
         self.origin = None
         self.destination = None
@@ -48,15 +90,28 @@ class Delay(Fact):
         self.arrivalTime = None
         self.delayCode = None
 
+    # This method predicts the arrival time of the train
+    # return: The predicted arrival time
     def predict_delay(self):
-        print(self.origin, self.destination,
-              self.delayTime, self.numberOfStops, self.delayStation, self.arrivalTime, self.delayCode)
         self.delayPrediction = prediction(self.origin, self.destination, int(self.numberOfStops),
                                           self.delayStation, self.delayTime, self.arrivalTime)
         return self.delayPrediction.time
 
-
+# ************************************************************************************************************
+#
+#
+#    TrainBooking
+# This class is used to handle what information the system has and what is needed for the cheapest ticket
+# and prediction elements
+#
+#
+#    By: Group 18
+#
+#    Created: 03/01/2021
+#
+# ************************************************************************************************************
 class TrainBooking(KnowledgeEngine):
+    # These are the initial actions of the knowledge base
     @DefFacts()
     def _initial_action(self):
         self.knowledge['question'] = None
@@ -203,12 +258,3 @@ class TrainBooking(KnowledgeEngine):
           Fact(delayStation=MATCH.delayStation), Fact(arrivalTime=MATCH.arrivalTime), Fact(delayCode=MATCH.delayCode))
     def predict(self):
         self.knowledge['response'] = ('The train will arrive at: ' + self.service.predict_delay())
-
-
-if __name__ == '__main__':
-
-    engine = TrainBooking()
-    engine.knowledge = {'service': 'book'}
-    engine.reset()  # Prepare the engine for the execution.
-    engine.run()  # Run it!
-    print(engine.knowledge['response'])

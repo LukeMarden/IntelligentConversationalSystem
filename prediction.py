@@ -2,21 +2,42 @@ import requests
 import json
 import datetime
 import time
-from datetime import datetime, date
-import matplotlib.pyplot as plt
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.neural_network import MLPRegressor
 from math import sqrt
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.multioutput import MultiOutputRegressor
-
 from sklearn.preprocessing import StandardScaler
 
 import pandas as pd
 from pandas import json_normalize
 import numpy as np
+# ************************************************************************************************************
+#
+#
+#    prediction.py
+# This class is used to predict a users train delay
+#
+#
+#    By: Group 18
+#
+#    Created: 03/01/2021
+#
+# ************************************************************************************************************
+
+
 class prediction():
+
+    # This method is used to initialise the classes variables
+    # station1: The destination
+    # station2: The origin
+    # numberOfStops: The number of stops for the whole journey
+    # delayStation: The station the delay occurred at
+    # delay: the delay in seconds
+    # arrivalTime: The proposed arrival time at the destination
+    # delayCode: The delay reason code
     def __init__(self, station1, station2, numberOfStops, delayStation, delay, arrivalTime, delayCode=0):
         self.data = self.load_data(station1, station2)
         # self.data = pd.read_pickle('database.pkl')
@@ -24,10 +45,17 @@ class prediction():
         self.predictionModel = self.practical_predict_model()
         self.time = self.predict_journey(arrivalTime, station2)
 
+    # This method finds the three letter code assosciated with a train station
+    # station: The station to find the three letter code of
+    # return: The three letter code
     def find_location_code(self, station):
         stations = json.load(open('train_codes.json', 'r'))
         return stations[station]
 
+    # This method loads the HSP of the train journeys between the two stations
+    # station1: The origin
+    # station2: The destination
+    # return: The data found and formatted
     def load_data(self, station1, station2):
         headers = { "Content-Type": "application/json" }
         auths = ('lmarden7@gmail.com', 'Qwer1234@')
@@ -92,6 +120,11 @@ class prediction():
         # print(database.loc[[7]])
         return database
 
+    # This method makes a table of the predicted journey ready for the prediction model to predict the times
+    # numberOfStops: The number of stops of the whole journey
+    # delayStation: The station the delay happened at
+    # delay: The delay in seconds
+    # delayCode: The delay reason code
     def find_journey(self, numberOfStops, delayStation, delay, delayCode):
         self.journeyData = self.data[self.data['numberOfStops'] == numberOfStops]
         self.journeyData = self.journeyData.drop(columns=['date_of_service', 'toc_code', 'rid',
@@ -108,14 +141,10 @@ class prediction():
         self.journeyData = self.journeyData.assign(late_canc_reason=delayCode)
         self.journeyData.loc[self.journeyData['location'] == self.find_location_code(delayStation),
                              'departureDelay'] = delay
-        self.journeyData.to_csv('journey.csv')
 
+    # This method is the more accurate prediction model
+    # return: The prediction model
     def accurate_predict_model(self):
-        # self.data = pd.get_dummies(self.data, columns=['location'])
-        # self.data = pd.get_dummies(self.data, columns=['previousStation'])
-        # self.data = pd.get_dummies(self.data, columns=['nextStation'])
-        # self.data = pd.get_dummies(self.data, columns=['toc_code'])
-
         self.data = self.data.drop('rid' ,axis=1)
         self.data['gbtt_ptd'] = self.data['gbtt_ptd'].dt.total_seconds()
         self.data['gbtt_pta'] = self.data['gbtt_pta'].dt.total_seconds()
@@ -125,9 +154,6 @@ class prediction():
         self.data = self.data.drop(columns=['toc_code', 'location', 'nextStation', 'previousStation', 'date_of_service'])
         self.data = self.data.reset_index()
         self.data = self.data.dropna(axis=0)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', 15)
-        # print(self.data)
         X = self.data.drop(columns=['nextDepartureDelay', 'nextArrivalDelay'])
         Y = self.data[['nextDepartureDelay', 'nextArrivalDelay']]
         scaler = StandardScaler()
@@ -138,13 +164,13 @@ class prediction():
         mlp = MLPRegressor(hidden_layer_sizes=50,solver='sgd', max_iter=10000, activation='logistic',random_state=0, learning_rate_init=0.001,verbose = 'True',momentum=0.9, tol=0.00002, early_stopping=False)
         mlp.fit(Xtrain, Ytrain)
         Yguess = mlp.predict(Xtest)
-        print('RMSE = ', sqrt(mean_squared_error(Ytest, Yguess)), ', R^2 value = ', r2_score(Ytest, Yguess))
+        # print('RMSE = ', sqrt(mean_squared_error(Ytest, Yguess)), ', R^2 value = ', r2_score(Ytest, Yguess))
 
         return mlp
 
+    # This method is the less accurate prediction model
+    # return: The prediction model
     def practical_predict_model(self):
-        # self.data = pd.get_dummies(self.data, columns=['location'])
-
         self.data = self.data.drop('rid', axis=1)
         self.data['gbtt_ptd'] = self.data['gbtt_ptd'].dt.total_seconds()
         self.data['gbtt_pta'] = self.data['gbtt_pta'].dt.total_seconds()
@@ -157,9 +183,6 @@ class prediction():
             columns=['gbtt_ptd', 'gbtt_pta', 'actual_td', 'actual_ta', 'nextJourney', 'previousJourney', 'numberOfStops'])
         self.data = self.data.reset_index()
         self.data = self.data.dropna(axis=0)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', 15)
-        # print(self.data)
         X = self.data.drop(columns=['nextDepartureDelay', 'nextArrivalDelay'])
         Y = self.data[['nextDepartureDelay', 'nextArrivalDelay']]
         scaler = StandardScaler()
@@ -171,13 +194,16 @@ class prediction():
                            learning_rate_init=0.001, verbose='True', momentum=0.9, tol=0.00002, early_stopping=False)
         mlp.fit(Xtrain, Ytrain)
         Yguess = mlp.predict(Xtest)
-        print('RMSE = ', sqrt(mean_squared_error(Ytest, Yguess)), ', R^2 value = ', r2_score(Ytest, Yguess))
+        # print('RMSE = ', sqrt(mean_squared_error(Ytest, Yguess)), ', R^2 value = ', r2_score(Ytest, Yguess))
 
         return mlp
 
+    # This method produces the time that the train is likely to arrive
+    # arrivalTime: The time the train was supposed to arrive
+    # station2: The destination
+    # return: The predicted arrival time based on delay
     def predict_journey(self, arrivalTime, station2):
         self.predictData = self.journeyData[(self.journeyData['departureDelay'] > 0).idxmax():]
-        # self.predictData = pd.get_dummies(self.predictData, columns=['location'])
         X = self.predictData.drop(columns=['location', 'nextDepartureDelay', 'nextArrivalDelay'])
         Y = pd.DataFrame()
         for index in range(len(self.predictData.index)):
@@ -191,16 +217,12 @@ class prediction():
         X = X.reset_index()
         Y = Y.reset_index()
         Z = (pd.concat([X, Y], axis=1)).drop(columns='index')
-        # print(Z)
         rowsRemoved = len(self.journeyData.index) - len(self.predictData.index)
         index = (self.journeyData[self.journeyData['location'] ==
                                   self.find_location_code(station2)].index.values - rowsRemoved)[0]
-
         date = datetime.strptime(str(arrivalTime), '%H%M').time()
         totalSeconds = ((date.hour * 60 + date.minute) * 60 + date.second) + Z['arrivalDelay'].iloc[index]
         predictedArrivalTime = time.strftime('%H:%M:%S', time.gmtime(totalSeconds))
-        Z.to_csv('Z.csv')
-        print(predictedArrivalTime)
         return predictedArrivalTime
 
 
