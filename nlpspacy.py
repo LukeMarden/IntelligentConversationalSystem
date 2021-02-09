@@ -97,12 +97,9 @@ def extract_info(question, message, kb):
         date = dateutil.parser.parse(str(message))
         times.append(str(date.hour).zfill(2) + str(date.minute).zfill(2))
 
-    if len(minutes) > 0:
-        results['minutes'] = minutes
-    if len(dates) > 0:
-        results['dates'] = dates
-    if len(times) > 0:
-        results['times'] = times
+    results['minutes'] = minutes
+    results['dates'] = dates
+    results['times'] = times
 
     results['integers'] = integers
 
